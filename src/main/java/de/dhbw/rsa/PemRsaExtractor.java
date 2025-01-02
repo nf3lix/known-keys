@@ -2,6 +2,7 @@ package de.dhbw.rsa;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -19,13 +20,13 @@ public class PemRsaExtractor {
 
     private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
 
-    private sealed interface PublicKeyExtractor permits PEMKeyPairExtractor, PrivateKeyInfoExtractor, SubjectPublicKeyInfoExtractor {
-        RSAPublicKey getModulus(Object pemObject) throws PEMException;
+    private sealed interface PublicKeyExtractor permits PEMKeyPairExtractor, PrivateKeyInfoExtractor, SubjectPublicKeyInfoExtractor, X509CertificateHolderExtractor {
+        RSAPublicKey getPublicKey(Object pemObject) throws PEMException;
     }
 
     private static final class PEMKeyPairExtractor implements PublicKeyExtractor {
         @Override
-        public RSAPublicKey getModulus(final Object pemObject) throws PEMException {
+        public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException {
             final PEMKeyPair pemKeyPair = (PEMKeyPair) pemObject;
             final PublicKey publicKey = converter.getPublicKey(pemKeyPair.getPublicKeyInfo());
             return (RSAPublicKey) publicKey;
@@ -34,7 +35,7 @@ public class PemRsaExtractor {
 
     private static final class PrivateKeyInfoExtractor implements PublicKeyExtractor {
         @Override
-        public RSAPublicKey getModulus(final Object pemObject) throws PEMException {
+        public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException {
             final PrivateKeyInfo privateKeyInfo = (PrivateKeyInfo) pemObject;
             final PrivateKey privateKey = converter.getPrivateKey(privateKeyInfo);
             RSAPrivateCrtKey rsaPrivateCrtKey = (RSAPrivateCrtKey) privateKey;
@@ -56,8 +57,18 @@ public class PemRsaExtractor {
 
     private static final class SubjectPublicKeyInfoExtractor implements PublicKeyExtractor {
         @Override
-        public RSAPublicKey getModulus(final Object pemObject) throws PEMException {
+        public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException {
             final SubjectPublicKeyInfo subjectPublicKeyInfo = (SubjectPublicKeyInfo) pemObject;
+            final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
+            return (RSAPublicKey) publicKey;
+        }
+    }
+
+    private static final class X509CertificateHolderExtractor implements PublicKeyExtractor {
+        @Override
+        public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException {
+            final X509CertificateHolder x509CertificateHolder = (X509CertificateHolder) pemObject;
+            final SubjectPublicKeyInfo subjectPublicKeyInfo = x509CertificateHolder.getSubjectPublicKeyInfo();
             final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
             return (RSAPublicKey) publicKey;
         }
@@ -68,13 +79,14 @@ public class PemRsaExtractor {
             case PEMKeyPair ignored -> new PEMKeyPairExtractor();
             case PrivateKeyInfo ignored -> new PrivateKeyInfoExtractor();
             case SubjectPublicKeyInfo ignored -> new SubjectPublicKeyInfoExtractor();
+            case X509CertificateHolder ignored -> new X509CertificateHolderExtractor();
             default -> throw new PEMException("Invalid PEM object");
         };
     }
 
     public static RSAPublicKey getRsaPublicKeyFromPemObject(final Object pemObject) throws PEMException {
         final PublicKeyExtractor extractor = getExtractor(pemObject);
-        return extractor.getModulus(pemObject);
+        return extractor.getPublicKey(pemObject);
     }
 
 }

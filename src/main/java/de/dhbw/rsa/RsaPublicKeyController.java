@@ -31,7 +31,8 @@ public class RsaPublicKeyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final RSAPublicKey publicKey = PemRsaExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
+            final Object o = pemParser.readObject();
+            final RSAPublicKey publicKey = PemRsaExtractor.getRsaPublicKeyFromPemObject(o);
             final boolean exists = rsaPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
