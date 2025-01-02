@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
+import java.security.interfaces.RSAPublicKey;
 
 @RestController
 @RequestMapping("/public-keys/rsa")
@@ -31,8 +31,8 @@ public class RsaPublicKeyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final BigInteger modulus = RsaModulusExtractor.getModulusFromPemObject(pemParser.readObject());
-            final boolean exists = rsaPublicKeyService.isProbablyKnown(modulus);
+            final RSAPublicKey publicKey = PemRsaExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
+            final boolean exists = rsaPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
@@ -45,8 +45,8 @@ public class RsaPublicKeyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final BigInteger modulus = RsaModulusExtractor.getModulusFromPemObject(pemParser.readObject());
-            rsaPublicKeyService.addPublicKey(modulus);
+            final RSAPublicKey publicKey = PemRsaExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
+            rsaPublicKeyService.addPublicKey(publicKey);
             return ResponseEntity.ok("Key stored successfully");
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
