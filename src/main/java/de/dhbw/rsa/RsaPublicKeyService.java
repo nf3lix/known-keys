@@ -11,14 +11,14 @@ import java.math.BigInteger;
 public class RsaPublicKeyService {
 
     @Autowired
-    private Client bloomFilterClient;
+    private Client publicKeyClient;
 
     public void addPublicKey(final BigInteger modulus) {
-        bloomFilterClient.add(JedisConfig.RSA_BLOOM_FILTER_NAME, modulus.toString());
+        publicKeyClient.add(JedisConfig.RSA_BLOOM_FILTER_NAME, modulus.toString());
     }
 
     public boolean isProbablyKnown(final BigInteger modulus) {
-        return bloomFilterClient.exists(JedisConfig.RSA_BLOOM_FILTER_NAME, modulus.toString());
+        return publicKeyClient.exists(JedisConfig.RSA_BLOOM_FILTER_NAME, modulus.toString());
     }
 
 }

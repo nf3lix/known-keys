@@ -12,6 +12,7 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPublicKey;
 
+// TODO: refactor
 public class RsaModulusExtractor {
 
     private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();

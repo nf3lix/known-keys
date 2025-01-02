@@ -10,6 +10,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public class JedisConfig {
 
     public final static String RSA_BLOOM_FILTER_NAME = "rsa_modulus";
+    public final static String EC_BLOOM_FILTER_NAME = "ec_public_point";
 
     @Bean
     public JedisPoolConfig jedisPoolConfig() {
@@ -35,6 +36,7 @@ public class JedisConfig {
         final Client bloomFilterClient = new Client(jedisPool);
         try {
             bloomFilterClient.createFilter(RSA_BLOOM_FILTER_NAME, 200000000, 0.01);
+            bloomFilterClient.createFilter(EC_BLOOM_FILTER_NAME, 200000000, 0.01);
         } catch (Exception e) {
             System.out.println("Bloom filter already exists");
         }
