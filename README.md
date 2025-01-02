@@ -12,3 +12,7 @@ Start Redis with Bloom Filter Extension:
 Start Spring Boot
 1. `mvn clean install`
 2. `mvn spring-boot:run`
+
+Run unit tests:
+1. `mvn test`
+2. generated coverage report: `target/site/jacoco/index.html`
