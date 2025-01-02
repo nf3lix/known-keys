@@ -1,5 +1,6 @@
 package de.dhbw.ec;
 
+import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
@@ -31,8 +32,8 @@ public class EcPublicKeyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPoint publicPoint = EcPublicPointExtractor.getPublicPointFromPemObject(pemParser.readObject());
-            final boolean exists = ecPublicKeyService.isProbablyKnown(publicPoint);
+            final ECPublicKey publicKey = EcPublicPointExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            final boolean exists = ecPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
@@ -46,8 +47,8 @@ public class EcPublicKeyController {
         }
 
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPoint publicPoint = EcPublicPointExtractor.getPublicPointFromPemObject(pemParser.readObject());
-            ecPublicKeyService.addPublicKey(publicPoint);
+            final ECPublicKey publicKey = EcPublicPointExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            ecPublicKeyService.addPublicKey(publicKey);
             return ResponseEntity.ok("Key stored successfully");
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);

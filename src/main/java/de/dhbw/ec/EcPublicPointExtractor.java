@@ -14,21 +14,19 @@ public class EcPublicPointExtractor {
     private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
 
     private sealed interface PublicPointExtractor permits PEMKeyPairExtractor {
-        ECPoint getPublicPoint(Object pemObject) throws PEMException;
+        ECPublicKey getPublicPoint(Object pemObject) throws PEMException;
     }
 
     private static final class PEMKeyPairExtractor implements PublicPointExtractor {
         @Override
-        public ECPoint getPublicPoint(final Object pemObject) throws PEMException {
+        public ECPublicKey getPublicPoint(final Object pemObject) throws PEMException {
             final PEMKeyPair pemKeyPair = (PEMKeyPair) pemObject;
             final PublicKey publicKey = converter.getPublicKey(pemKeyPair.getPublicKeyInfo());
-            final ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
-            final ECParameterSpec ecParameterSpec = ecPublicKey.getParameters();
-            return ecParameterSpec.getG().getDetachedPoint();
+            return (ECPublicKey) publicKey;
         }
     }
 
-    public static ECPoint getPublicPointFromPemObject(final Object pemObject) throws PEMException {
+    public static ECPublicKey getEcPublicKeyFromPemObject(final Object pemObject) throws PEMException {
         final PublicPointExtractor publicPointExtractor = new PEMKeyPairExtractor();
         return publicPointExtractor.getPublicPoint(pemObject);
     }
