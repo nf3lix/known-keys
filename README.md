@@ -1,8 +1,14 @@
 ## Run locally
 
 ### Prerequisites
-installation of Java 21 and Maven
+Local installation of: 
+- Java 21
+- Maven
+- Docker
 
-Start 
+Start Redis with Bloom Filter Extension:
+1. `docker run --name redis-bloom -p 6380:6379 -d redislabs/rebloom:latest`
+
+Start Spring Boot
 1. `mvn clean install`
 2. `mvn spring-boot:run`
