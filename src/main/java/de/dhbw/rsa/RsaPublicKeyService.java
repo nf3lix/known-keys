@@ -14,7 +14,6 @@ public class RsaPublicKeyService {
     private Client publicKeyClient;
 
     public void addPublicKey(final RSAPublicKey publicKey) {
-        System.out.println(publicKey.getModulus().toString());
         publicKeyClient.add(JedisConfig.RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
     }
 

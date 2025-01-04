@@ -2,6 +2,8 @@ package de.dhbw.rsa;
 
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.security.interfaces.RSAPublicKey;
 public class RsaPublicKeyController {
 
     private final RsaPublicKeyService rsaPublicKeyService;
+    private static final Logger logger = LoggerFactory.getLogger(RsaPublicKeyController.class);
 
     public RsaPublicKeyController(final RsaPublicKeyService rsaPublicKeyService) {
         this.rsaPublicKeyService = rsaPublicKeyService;
@@ -48,7 +51,8 @@ public class RsaPublicKeyController {
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final RSAPublicKey publicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
             rsaPublicKeyService.addPublicKey(publicKey);
-            return ResponseEntity.ok("Key stored successfully");
+            logger.info("Public key stored successfully");
+            return ResponseEntity.ok("Public key stored successfully");
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
         }
