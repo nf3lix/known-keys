@@ -9,7 +9,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import java.security.PublicKey;
 
-public class EcPublicPointExtractor {
+public class EcPublicKeyExtractor {
 
     private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
 

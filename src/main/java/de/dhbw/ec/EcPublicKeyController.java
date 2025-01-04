@@ -1,7 +1,6 @@
 package de.dhbw.ec;
 
 import org.bouncycastle.jce.interfaces.ECPublicKey;
-import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,7 @@ public class EcPublicKeyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPublicKey publicKey = EcPublicPointExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
             final boolean exists = ecPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
@@ -47,7 +46,7 @@ public class EcPublicKeyController {
         }
 
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPublicKey publicKey = EcPublicPointExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
             ecPublicKeyService.addPublicKey(publicKey);
             return ResponseEntity.ok("Key stored successfully");
         } catch (IOException e) {

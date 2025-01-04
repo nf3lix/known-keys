@@ -16,7 +16,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
-public class PemRsaExtractor {
+public class RsaPublicKeyExtractor {
 
     private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
 
