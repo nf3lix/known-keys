@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static de.dhbw.PEMFileValidator.validatePEMFile;
+
 @RestController
 @RequestMapping("/public-keys/ec")
 public class EcPublicKeyController {
@@ -30,6 +32,7 @@ public class EcPublicKeyController {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
+        validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
             final boolean exists = ecPublicKeyService.isProbablyKnown(publicKey);
@@ -44,7 +47,7 @@ public class EcPublicKeyController {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
-
+        validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
             ecPublicKeyService.addPublicKey(publicKey);

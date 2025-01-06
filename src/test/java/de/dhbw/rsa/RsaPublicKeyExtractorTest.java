@@ -1,5 +1,6 @@
 package de.dhbw.rsa;
 
+import de.dhbw.ec.EcPublicKeyExtractor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -95,6 +96,48 @@ public class RsaPublicKeyExtractorTest {
         final RSAPublicKey rsaPublicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(certificateHolder);
         assert Objects.equals(rsaPublicKey.getPublicExponent(), BigInteger.valueOf(65537));
         assert Objects.equals(rsaPublicKey.getModulus(), new BigInteger("9367876150072090697440066621288661310608885474889923310005709210929803520665733645389903314573454165424857725023366367246023683414250447546346372052665457"));
+    }
+
+    @Test
+    public void throwExceptionOnParsingEcPublicKey() throws IOException {
+        final String testPublicKey = """
+                -----BEGIN PUBLIC KEY-----
+                MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEXSdJcWoNZ61BrtHcu9ouSfWf2II/
+                EknX0WU9tdOVPkDR8qzoCE7HnFgnyVWH/rXPouFDk6sbsKZNUUQBu8NQZA==
+                -----END PUBLIC KEY-----
+                """;
+        final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
+        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyInfo));
+    }
+
+    @Test
+    public void throwExceptionOnParsingECCert() throws IOException {
+        final String testCert = """
+                -----BEGIN CERTIFICATE-----
+                MIIBHTCBxaADAgECAghNge3b7BjSyTAKBggqhkjOPQQDAjAVMRMwEQYDVQQDDApU
+                ZXN0SXNzdWVyMB4XDTI1MDEwNDE2MDQ1NVoXDTI2MDEwNDE2MDQ1NVowFjEUMBIG
+                A1UEAwwLVGVzdFN1YmplY3QwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQHsi9x
+                I7NcwMk102YC9PfVDpUHfw8BjklLj3Kg6p1d8fcyDG2ddVyBTvVlaH//2w+EYyWb
+                00ehxXjlm3JxXRy/MAoGCCqGSM49BAMCA0cAMEQCIBZ0YZWZnJaWGbEXw8n/nKs0
+                xBu0kt3q7KHwym6WRQ9cAiA2565DWcal9Xvpds9GolKZTjBZHAnza08Hv+AEPlOy
+                iA==
+                -----END CERTIFICATE-----
+                """;
+        final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
+        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(certificateHolder));
+    }
+
+    @Test
+    public void throwExceptionOnParsingECPubKeyPair() throws IOException {
+        final String testPrivateKeyPair = """
+                -----BEGIN EC PRIVATE KEY-----
+                MHcCAQEEIEWwG/GnVceXk0THOVjrDrer8pboEpo6p8PNKa+E27AcoAoGCCqGSM49
+                AwEHoUQDQgAEG5BlVe3c4+AtEGFK4tAEyUV6UTJvhvGMlsDALxV7IEyP4gpASCEQ
+                QjCE//yG3Rr83vafVf1nv7H4F3zFjyD6/Q==
+                -----END EC PRIVATE KEY-----
+                """;
+        final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
+        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyPair));
     }
 
     @Test

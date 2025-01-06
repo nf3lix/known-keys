@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.interfaces.RSAPublicKey;
 
+import static de.dhbw.PEMFileValidator.validatePEMFile;
+
 @RestController
 @RequestMapping("/public-keys/rsa")
 public class RsaPublicKeyController {
@@ -33,6 +35,7 @@ public class RsaPublicKeyController {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
+        validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final Object o = pemParser.readObject();
             final RSAPublicKey publicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(o);
@@ -48,6 +51,7 @@ public class RsaPublicKeyController {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
         }
+        validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final RSAPublicKey publicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
             rsaPublicKeyService.addPublicKey(publicKey);

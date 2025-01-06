@@ -24,6 +24,9 @@ public class EcPublicKeyExtractor {
         public ECPublicKey getPublicKey(final Object pemObject) throws PEMException {
             final PEMKeyPair pemKeyPair = (PEMKeyPair) pemObject;
             final PublicKey publicKey = converter.getPublicKey(pemKeyPair.getPublicKeyInfo());
+            if (!(publicKey instanceof ECPublicKey)) {
+                throw new PEMException("Public key is not an instance of ECPublicKey.");
+            }
             return (ECPublicKey) publicKey;
         }
     }
@@ -34,6 +37,9 @@ public class EcPublicKeyExtractor {
             final X509CertificateHolder x509CertificateHolder = (X509CertificateHolder) pemObject;
             final SubjectPublicKeyInfo subjectPublicKeyInfo = x509CertificateHolder.getSubjectPublicKeyInfo();
             final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
+            if (!(publicKey instanceof ECPublicKey)) {
+                throw new PEMException("Public key is not an instance of ECPublicKey.");
+            }
             return (ECPublicKey) publicKey;
         }
     }
@@ -43,6 +49,9 @@ public class EcPublicKeyExtractor {
         public ECPublicKey getPublicKey(final Object pemObject) throws PEMException {
             final SubjectPublicKeyInfo subjectPublicKeyInfo = (SubjectPublicKeyInfo) pemObject;
             final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
+            if (!(publicKey instanceof ECPublicKey)) {
+                throw new PEMException("Public key is not an instance of ECPublicKey.");
+            }
             return (ECPublicKey) publicKey;
         }
     }

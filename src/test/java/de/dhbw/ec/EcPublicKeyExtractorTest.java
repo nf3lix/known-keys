@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Security;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Objects;
 
 import static de.dhbw.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,7 +60,6 @@ public class EcPublicKeyExtractorTest {
                 iA==
                 -----END CERTIFICATE-----
                 """;
-
         final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
         final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(certificateHolder);
 
@@ -88,6 +85,52 @@ public class EcPublicKeyExtractorTest {
         final BigInteger yHex = new BigInteger("94962155699533225367980242393929424288013306610435794966719739023909263200356");
         final ECPoint point = curve.createPoint(xHex, yHex);
         assert ecPublicKey.getQ().equals(point);
+    }
+
+    @Test
+    public void throwExceptionOnParsingRsaPublicKey() throws IOException {
+        final String testPublicKey = """
+                -----BEGIN PUBLIC KEY-----
+                MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALSp6jVkvF0lRMCKP4wwM9DkpUetdatC
+                2F3sEPzWjDrOb7R7qfw4w7kZWo0CMEGskm1XulfjQ3Gv5uu70jBexqsCAwEAAQ==
+                -----END PUBLIC KEY-----
+                """;
+        final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
+        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyInfo));
+    }
+
+    @Test
+    public void throwExceptionOnParsingRsaCert() throws IOException {
+        final String testCert = """
+                -----BEGIN CERTIFICATE-----
+                MIIBIDCBy6ADAgECAgYBlCiibJYwDQYJKoZIhvcNAQELBQAwEjEQMA4GA1UEAwwH
+                VGVzdCBDQTAeFw0yNTAxMDEyMDA4NDBaFw0yNTAxMDMyMDA4NDBaMBsxGTAXBgNV
+                BAMMEFRlc3QgQ2VydGlmaWNhdGUwXDANBgkqhkiG9w0BAQEFAANLADBIAkEAst05
+                jHPYsUscEeL1V6qf/6oiuHusaPGwd7bprsjvfn1htSNy65xuB+T5TnxG5VkQjfFr
+                qX1vCbFH8m9vPGHEcQIDAQABMA0GCSqGSIb3DQEBCwUAA0EAr2DDPEquDRFIjGv7
+                C85J6t3TSotnawZq6AINULuVbnae/bHG9IbTqbQc9muTsHzSGa51BqZ4cd1txfFP
+                829Mpg==
+                -----END CERTIFICATE-----
+                """;
+        final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
+        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(certificateHolder));
+    }
+
+    @Test
+    public void throwExceptionOnParsingRsaPubKeyPair() throws IOException {
+        final String testPrivateKeyPair = """
+                -----BEGIN RSA PRIVATE KEY-----
+                MIIBOQIBAAJBAJ+E+gdRqePIUTvZosN5sxHN5KqkGC90FE61qmXEO4xCd3NNVmXv
+                d4EODs9JsRRogZkOOkVoaUd5udAynracDAsCAwEAAQJADdPoHJROpskpiYefHVTC
+                WgvAA66/zfVBAWWsBLBS/SBuN7VQX4AhEKPhO7xfTtFsNPHXNoaGaaS2yGEnpHux
+                IQIhAKfGIiHb8rju5HTTdBJ/5wt0lasP0kxDpY7+Y3KXpWfRAiEA82edB4eqnXXd
+                ocB1uXlM08+SMV9qimtJWwg/YH/3yRsCIHKbrbtVhfSA9L09qX/tsYYoyQkHENCa
+                MWGCM6sXHp3RAiAgzklC140uVdF+WJNFYUzyi1p33xVb/KPRaiYomnbKGwIgUs6J
+                t6Hb59N5BUnIjLkT5xCwbpIGbMuxHntOQp8OgBI=
+                -----END RSA PRIVATE KEY-----
+                """;
+        final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
+        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyPair));
     }
 
     @Test
