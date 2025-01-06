@@ -64,7 +64,7 @@ public class RsaPublicKeyExtractorTest {
     }
 
     @Test
-    public void getPublicKeySubjectPublicKeyInfo() throws Exception {
+    public void getPublicKeyFromPublicKeyInfo() throws Exception {
         final String testPublicKey = """
                 -----BEGIN PUBLIC KEY-----
                 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALSp6jVkvF0lRMCKP4wwM9DkpUetdatC

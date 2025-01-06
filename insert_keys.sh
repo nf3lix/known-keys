@@ -1,11 +1,11 @@
 #!/bin/bash
 path=""
 
-read -p "Please choose a cryptographic method (RSA/EC) : " crypto
+read -p "Please choose the crypto system for the public keys (RSA/EC) : " crypto
 
 # Validate user input
 if [[ "$crypto" != "RSA" && "$crypto" != "EC" ]]; then
-    echo "Invalid cryptographic method. Please enter 'RSA' or 'EC'."
+    echo "Invalid crypto system. Please enter 'RSA' or 'EC'."
     exit 1
 fi
 

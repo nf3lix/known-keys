@@ -1,3 +1,6 @@
+# Known keys
+According to https://certificate.transparency.dev/, 11 billion certificates have been registered in the Certificate Transparency initiative. 
+
 ## Run locally
 
 ### Prerequisites
@@ -23,3 +26,6 @@ http://localhost:8080/swagger-ui/
 Insert a large amount of keys:
 1. `git clone git@github.com:badkeys/debianopenssl.git <directory>` 
 2. `/bin/bash insert_keys.sh`
+
+### Test with SSH
+- ssh-keygen -t rsa -b 2048 -m PEM
