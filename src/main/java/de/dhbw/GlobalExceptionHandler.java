@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,9 +20,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body("Invalid key file provided.");
     }
 
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<String> handleMissingServletRequestPartException(final MissingServletRequestPartException e) {
+        logger.error(e.getMessage());
+        return ResponseEntity.badRequest().body("Invalid key file provided.");
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(final Exception e) {
         logger.error(e.getMessage());
+        logger.error(e.getClass().getCanonicalName());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
     }
 

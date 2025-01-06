@@ -1,6 +1,5 @@
 package de.dhbw.rsa;
 
-import de.dhbw.ec.EcPublicKeyExtractor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
