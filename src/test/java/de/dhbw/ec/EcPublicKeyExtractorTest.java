@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.Security;
 
-import static de.dhbw.TestUtil.*;
+import static de.dhbw.PublicKeyExtractorTestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EcPublicKeyExtractorTest {
@@ -39,9 +39,9 @@ public class EcPublicKeyExtractorTest {
         final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyPair);
 
         final ECCurve curve = new SecP256R1Curve();
-        final BigInteger xHex = new BigInteger("12467572282102654442499181405833496531090552583884637003128218928464447348812");
-        final BigInteger yHex = new BigInteger("65080115534543149538371136859567843899013310349629399871054168498913943812861");
-        final ECPoint point = curve.createPoint(xHex, yHex);
+        final BigInteger x = new BigInteger("12467572282102654442499181405833496531090552583884637003128218928464447348812");
+        final BigInteger y = new BigInteger("65080115534543149538371136859567843899013310349629399871054168498913943812861");
+        final ECPoint point = curve.createPoint(x, y);
 
         assert ecPublicKey.getQ().equals(point);
     }
@@ -63,9 +63,9 @@ public class EcPublicKeyExtractorTest {
         final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(certificateHolder);
 
         final ECCurve curve = new SecP256R1Curve();
-        final BigInteger xHex = new BigInteger("3481016149925405259576293977989710538158770666165491448807298223437156015601");
-        final BigInteger yHex = new BigInteger("111809701729478374801122797272365083847701066388734389762440362091230466481343");
-        final ECPoint point = curve.createPoint(xHex, yHex);
+        final BigInteger x = new BigInteger("3481016149925405259576293977989710538158770666165491448807298223437156015601");
+        final BigInteger y = new BigInteger("111809701729478374801122797272365083847701066388734389762440362091230466481343");
+        final ECPoint point = curve.createPoint(x, y);
         assert ecPublicKey.getQ().equals(point);
     }
 
@@ -80,9 +80,9 @@ public class EcPublicKeyExtractorTest {
         final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
         final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyInfo);
         final ECCurve curve = new SecP256R1Curve();
-        final BigInteger xHex = new BigInteger("42134508838896037615597729412571348241399061755847904145515134493259224923712");
-        final BigInteger yHex = new BigInteger("94962155699533225367980242393929424288013306610435794966719739023909263200356");
-        final ECPoint point = curve.createPoint(xHex, yHex);
+        final BigInteger x = new BigInteger("42134508838896037615597729412571348241399061755847904145515134493259224923712");
+        final BigInteger y = new BigInteger("94962155699533225367980242393929424288013306610435794966719739023909263200356");
+        final ECPoint point = curve.createPoint(x, y);
         assert ecPublicKey.getQ().equals(point);
     }
 

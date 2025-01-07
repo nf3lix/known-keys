@@ -29,9 +29,6 @@ public class EcPublicKeyController {
 
     @PostMapping(path = "/exists", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> keyExists(@RequestParam("file") final MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
-        }
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
@@ -44,14 +41,11 @@ public class EcPublicKeyController {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please select a file to upload.");
-        }
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
             ecPublicKeyService.addPublicKey(publicKey);
-            return ResponseEntity.ok("Key stored successfully");
+            return ResponseEntity.ok("Public key stored successfully");
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
         }

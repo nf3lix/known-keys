@@ -9,7 +9,7 @@ import org.bouncycastle.openssl.PEMParser;
 import java.io.IOException;
 import java.io.StringReader;
 
-public class TestUtil {
+public class PublicKeyExtractorTestUtil {
 
     public static PEMKeyPair readPEMKeyPair(final String privateKeyPEM) throws IOException {
         try (final StringReader privateKeyReader = new StringReader(privateKeyPEM);

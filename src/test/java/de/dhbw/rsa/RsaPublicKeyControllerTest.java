@@ -9,23 +9,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.stream.Stream;
 
+import static de.dhbw.PublicKeyControllerTestUtil.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,8 +48,8 @@ public class RsaPublicKeyControllerTest {
 
     @ParameterizedTest
     @MethodSource("provideRsaKeyResources")
-    public void testRsaKeyExists(String resourcePath, BigInteger expectedModulus) throws Exception {
-        final MockMultipartFile mockFile = getMockMultipartFile(resourcePath);
+    public void testRsaKeyExists(final String resourcePath, final BigInteger expectedModulus) throws Exception {
+        final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
 
         mockMvc.perform(multipart("/public-keys/rsa/exists")
@@ -68,8 +64,8 @@ public class RsaPublicKeyControllerTest {
 
     @ParameterizedTest
     @MethodSource("provideRsaKeyResources")
-    public void testRsaKeyUpload(String resourcePath, BigInteger expectedModulus) throws Exception {
-        final MockMultipartFile mockFile = getMockMultipartFile(resourcePath);
+    public void testRsaKeyUpload(final String resourcePath, final BigInteger expectedModulus) throws Exception {
+        final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
 
         mockMvc.perform(multipart("/public-keys/rsa")
@@ -102,6 +98,7 @@ public class RsaPublicKeyControllerTest {
         );
     }
 
+    /*
     private MockMultipartFile getMockMultipartFile(String resourcePath) throws IOException {
         final Resource resource = resourceLoader.getResource(resourcePath);
         return new MockMultipartFile(
@@ -110,24 +107,7 @@ public class RsaPublicKeyControllerTest {
                 MediaType.TEXT_PLAIN_VALUE,
                 Files.readAllBytes(Paths.get(resource.getURI()))
         );
-    }
-
-    private static MockMultipartFile emptyMockMultipartFile() {
-        return new MockMultipartFile(
-                "empty_file",
-                "empty_file.key",
-                MediaType.TEXT_PLAIN_VALUE,
-                new byte[0]
-        );
-    }
-
-    private static MockMultipartFile invalidPemMockMultipartFile() {
-        return new MockMultipartFile(
-                "invalid_file",
-                "invalid_file.key",
-                MediaType.TEXT_PLAIN_VALUE,
-                "invalid_content".getBytes());
-    }
+    }*/
 
     private static Stream<Arguments> provideRsaKeyResources() {
         return Stream.of(

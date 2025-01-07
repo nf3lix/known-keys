@@ -15,7 +15,7 @@ import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Objects;
 
-import static de.dhbw.TestUtil.*;
+import static de.dhbw.PublicKeyExtractorTestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RsaPublicKeyExtractorTest {
