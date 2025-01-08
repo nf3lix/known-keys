@@ -13,7 +13,7 @@ public class JedisConfig {
     public final static String EC_BLOOM_FILTER_NAME = "ec_public_point";
 
     @Bean
-    public JedisPoolConfig jedisPoolConfig() {
+    public JedisPool jedisPool() {
         JedisPoolConfig conf = new JedisPoolConfig();
         conf.setMaxTotal(100);
         conf.setTestOnBorrow(false);
@@ -23,12 +23,7 @@ public class JedisConfig {
         conf.setNumTestsPerEvictionRun(-1);
         conf.setFairness(true);
         conf.setJmxEnabled(false);
-        return conf;
-    }
-
-    @Bean
-    public JedisPool jedisPool(JedisPoolConfig jedisPoolConfig) {
-        return new JedisPool(jedisPoolConfig, "localhost", 6380, 30000);
+        return new JedisPool(conf, "localhost", 6380, 30000);
     }
 
     @Bean

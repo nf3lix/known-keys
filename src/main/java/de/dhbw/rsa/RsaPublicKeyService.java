@@ -1,8 +1,5 @@
 package de.dhbw.rsa;
 
-import de.dhbw.JedisConfig;
-import io.rebloom.client.Client;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.interfaces.RSAPublicKey;
@@ -10,15 +7,18 @@ import java.security.interfaces.RSAPublicKey;
 @Service
 public class RsaPublicKeyService {
 
-    @Autowired
-    private Client publicKeyClient;
+    private final RsaPublicKeyRepository rsaPublicKeyRepository;
+
+    public RsaPublicKeyService(final RsaPublicKeyRepository rsaPublicKeyRepository) {
+        this.rsaPublicKeyRepository = rsaPublicKeyRepository;
+    }
 
     public void addPublicKey(final RSAPublicKey publicKey) {
-        publicKeyClient.add(JedisConfig.RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
+        rsaPublicKeyRepository.addPublicKey(publicKey);
     }
 
     public boolean isProbablyKnown(final RSAPublicKey publicKey) {
-        return publicKeyClient.exists(JedisConfig.RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
+        return rsaPublicKeyRepository.isProbablyKnown(publicKey);
     }
 
 }

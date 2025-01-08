@@ -98,17 +98,6 @@ public class RsaPublicKeyControllerTest {
         );
     }
 
-    /*
-    private MockMultipartFile getMockMultipartFile(String resourcePath) throws IOException {
-        final Resource resource = resourceLoader.getResource(resourcePath);
-        return new MockMultipartFile(
-                "file",
-                "file.key",
-                MediaType.TEXT_PLAIN_VALUE,
-                Files.readAllBytes(Paths.get(resource.getURI()))
-        );
-    }*/
-
     private static Stream<Arguments> provideRsaKeyResources() {
         return Stream.of(
                 Arguments.of("classpath:rsa/TEST_RSA_PUBLIC_KEY.PEM", new BigInteger("9462127310943028450513446955298051246068106169818976319508148622091607268242929842057464753432526034171966724638379914356963896019954886942531223946184363")),
