@@ -1,6 +1,9 @@
 package de.dhbw;
 
 import io.rebloom.client.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import redis.clients.jedis.JedisPool;
@@ -11,6 +14,12 @@ public class JedisConfig {
 
     public final static String RSA_BLOOM_FILTER_NAME = "rsa_modulus";
     public final static String EC_BLOOM_FILTER_NAME = "ec_public_point";
+
+    @Value("${redis.host}")
+    private String redisHost;
+
+    @Value("${redis.port}")
+    private int redisPort;
 
     @Bean
     public JedisPool jedisPool() {
@@ -23,7 +32,7 @@ public class JedisConfig {
         conf.setNumTestsPerEvictionRun(-1);
         conf.setFairness(true);
         conf.setJmxEnabled(false);
-        return new JedisPool(conf, "localhost", 6380, 30000);
+        return new JedisPool(conf, redisHost, redisPort, 30000);
     }
 
     @Bean

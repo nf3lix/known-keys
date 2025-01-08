@@ -2,26 +2,21 @@
 According to https://certificate.transparency.dev/, 11 billion certificates have been registered in the Certificate Transparency initiative. 
 
 ## Run locally
+Requires local installation of Docker.
 
-### Prerequisites
-Local installation of: 
-- Java 21
-- Maven
-- Docker
+### Run with docker compose
+1. `docker-compose up -d`
+2. Access [Swagger UI](http://localhost:8080/swagger-ui/)
 
-### Start Redis with Bloom Filter Extension:
+### Run with docker and maven (optional)
 1. `docker run --name redis-bloom -p 6380:6379 -d redislabs/rebloom:latest`
+2. `mvn clean install`
+3. `mvn spring-boot:run`
+4. Access [Swagger UI](http://localhost:8080/swagger-ui/)
 
-### Start Spring Boot
-1. `mvn clean install`
-2. `mvn spring-boot:run`
-
-### Run unit tests:
+Run unit tests:
 1. `mvn test`
 2. generated coverage report: `target/site/jacoco/index.html`
-
-### Swagger UI:
-http://localhost:8080/swagger-ui/
 
 Insert a large amount of keys:
 1. `git clone git@github.com:badkeys/debianopenssl.git <directory>` 

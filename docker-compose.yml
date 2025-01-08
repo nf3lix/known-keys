@@ -1,0 +1,27 @@
+services:
+  known-keys-database:
+    image: redislabs/rebloom:latest
+    container_name: known-keys-database
+    ports:
+      - "6380:6379"
+    networks:
+      - app-network
+
+  known-keys-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: known-keys-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - known-keys-database
+    environment:
+      REDIS_HOST: known-keys-database
+      REDIS_PORT: 6379
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
