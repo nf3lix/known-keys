@@ -24,3 +24,24 @@ Insert a large amount of keys:
 
 ### Test with SSH
 - ssh-keygen -t rsa -b 2048 -m PEM
+
+### Storage Efficiency
+To evaluate storage efficiency, we consider the memory consumption of Redis keys.
+We compare the Redis Bloom Filter with a Redis Set. To run the application with a Set instead of a Bloom Filter, the Spring profile `set` must be set: `mvn spring-boot:run -Dspring-boot.run.profiles=set`.
+The test is conducted using 4096-bit RSA keys.
+Redis stores entries in a Set as strings. The memory consumption of a Set increases approximately linearly with the number of stored moduli (around 1300 bytes per entry).
+
+| Number of Entries | Memory Consumption of the Set |
+|-------------------|-------------------------------|
+| 10                | 13352                         |
+| 100               | 132056                        |
+| 1000              | 1312312                       |
+
+For a Bloom Filter, the number of bits to reserve is calculated as `capacity * -ln(error_rate) / ln(2)^2`.
+In our case, the capacity is 1 billion, and the error rate is 0.01.
+Observed memory consumption for the Bloom Filter in Redis remains constant at 1378469320 bytes.
+
+With a linear increase in memory consumption for a Set, a Bloom filter is worthwhile in this scenario from around 1 million stored public keys.
+
+# Further reading
+- Redis docs for Bloom Filters: https://redis.io/docs/latest/develop/data-types/probabilistic/bloom-filter/#total-size-of-a-bloom-filter

@@ -3,13 +3,9 @@ package de.dhbw.ec;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -49,6 +45,11 @@ public class EcPublicKeyController {
         } catch (IOException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
         }
+    }
+
+    @GetMapping(path = "/redis-memory-consumption")
+    public ResponseEntity<String> getMemoryConsumption() {
+        return ResponseEntity.ok(String.valueOf(ecPublicKeyService.getMemoryConsumption()));
     }
 
 }

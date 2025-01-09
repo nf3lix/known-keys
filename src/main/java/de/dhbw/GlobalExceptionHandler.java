@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(final Exception e) {
         logger.error(e.getMessage());
-        logger.error(e.getClass().getCanonicalName());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
     }
 

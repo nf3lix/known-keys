@@ -35,6 +35,7 @@ perform_curl_request() {
 
 export -f perform_curl_request
 
+echo "#################"
 start_time=$(date +%s.%N)
 # Find .pem and .key files recursively and perform post request
 if [[ -z "$max_files" ]]; then
@@ -51,3 +52,6 @@ fi
 end_time=$(date +%s.%N)
 elapsed=$(echo "$end_time - $start_time" | bc)
 echo "Time taken: ${elapsed} seconds."
+
+new_memory_consumption=$(curl -s "http://localhost:8080/public-keys/${crypto_lower}/redis-memory-consumption")
+echo "Memory consumption (bytes) of the redis key after this operation: $new_memory_consumption"

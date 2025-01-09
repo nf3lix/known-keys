@@ -21,4 +21,8 @@ public class RsaPublicKeyService {
         return rsaPublicKeyRepository.isProbablyKnown(publicKey);
     }
 
+    public long getMemoryConsumption() {
+        return rsaPublicKeyRepository.getMemoryConsumption();
+    }
+
 }

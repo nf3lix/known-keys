@@ -1,8 +1,6 @@
 package de.dhbw;
 
 import io.rebloom.client.Client;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,13 +37,12 @@ public class JedisConfig {
     public Client bloomFilterClient(JedisPool jedisPool) {
         final Client bloomFilterClient = new Client(jedisPool);
         try {
-            bloomFilterClient.createFilter(RSA_BLOOM_FILTER_NAME, 200000000, 0.01);
-            bloomFilterClient.createFilter(EC_BLOOM_FILTER_NAME, 200000000, 0.01);
+            bloomFilterClient.createFilter(RSA_BLOOM_FILTER_NAME, 1_000_000_000L, 0.01);
+            bloomFilterClient.createFilter(EC_BLOOM_FILTER_NAME, 1_000_000_000L, 0.01);
         } catch (Exception e) {
             System.out.println("Bloom filter already exists");
         }
         return bloomFilterClient;
     }
-
 
 }

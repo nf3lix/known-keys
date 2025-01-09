@@ -32,4 +32,11 @@ public class RsaHashSetRepository implements RsaPublicKeyRepository {
             return jedis.sismember(RSA_SET_NAME, publicKey.getModulus().toString());
         }
     }
+
+    @Override
+    public long getMemoryConsumption() {
+        try (final Jedis jedis = jedisPool.getResource()) {
+            return jedis.memoryUsage(RSA_SET_NAME);
+        }
+    }
 }
