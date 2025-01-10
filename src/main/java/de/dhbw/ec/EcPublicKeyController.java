@@ -27,7 +27,8 @@ public class EcPublicKeyController {
     public ResponseEntity<String> keyExists(@RequestParam("file") final MultipartFile file) throws IOException {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+            final ECPublicKey publicKey = ecPublicKeyExtractor.getPublicKey(pemParser.readObject());
             final boolean exists = ecPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
@@ -39,7 +40,8 @@ public class EcPublicKeyController {
     public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file) throws IOException {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final ECPublicKey publicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(pemParser.readObject());
+            final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+            final ECPublicKey publicKey = ecPublicKeyExtractor.getPublicKey(pemParser.readObject());
             ecPublicKeyService.addPublicKey(publicKey);
             return ResponseEntity.ok("Public key stored successfully");
         } catch (IOException e) {

@@ -31,7 +31,8 @@ public class RsaPublicKeyController {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final Object o = pemParser.readObject();
-            final RSAPublicKey publicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(o);
+            final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+            final RSAPublicKey publicKey = rsaPublicKeyExtractor.getPublicKey(o);
             final boolean exists = rsaPublicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
         } catch (IOException e) {
@@ -43,7 +44,8 @@ public class RsaPublicKeyController {
     public ResponseEntity<String> uploadKey(@RequestParam("file") final MultipartFile file) throws IOException {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final RSAPublicKey publicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(pemParser.readObject());
+            final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+            final RSAPublicKey publicKey = rsaPublicKeyExtractor.getPublicKey(pemParser.readObject());
             rsaPublicKeyService.addPublicKey(publicKey);
             logger.info("Public key stored successfully");
             return ResponseEntity.ok("Public key stored successfully");

@@ -1,71 +1,21 @@
 package de.dhbw.ec;
 
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.X509CertificateHolder;
+import de.dhbw.AbstractPublicKeyExtractor;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.openssl.PEMException;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
 import java.security.PublicKey;
 
-public class EcPublicKeyExtractor {
+public class EcPublicKeyExtractor extends AbstractPublicKeyExtractor<ECPublicKey> {
 
-    private static final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-
-    private sealed interface PublicKeyExtractor permits PEMKeyPairExtractor, SubjectPublicKeyInfoExtractor, X509CertificateHolderExtractor {
-        ECPublicKey getPublicKey(Object pemObject) throws PEMException;
+    @Override
+    protected boolean isValidKeyType(PublicKey publicKey) {
+        return publicKey instanceof ECPublicKey;
     }
 
-    private static final class PEMKeyPairExtractor implements PublicKeyExtractor {
-        @Override
-        public ECPublicKey getPublicKey(final Object pemObject) throws PEMException {
-            final PEMKeyPair pemKeyPair = (PEMKeyPair) pemObject;
-            final PublicKey publicKey = converter.getPublicKey(pemKeyPair.getPublicKeyInfo());
-            if (!(publicKey instanceof ECPublicKey)) {
-                throw new PEMException("Public key is not an instance of ECPublicKey.");
-            }
-            return (ECPublicKey) publicKey;
-        }
-    }
-
-    private static final class X509CertificateHolderExtractor implements PublicKeyExtractor {
-        @Override
-        public ECPublicKey getPublicKey(final Object pemObject) throws PEMException {
-            final X509CertificateHolder x509CertificateHolder = (X509CertificateHolder) pemObject;
-            final SubjectPublicKeyInfo subjectPublicKeyInfo = x509CertificateHolder.getSubjectPublicKeyInfo();
-            final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
-            if (!(publicKey instanceof ECPublicKey)) {
-                throw new PEMException("Public key is not an instance of ECPublicKey.");
-            }
-            return (ECPublicKey) publicKey;
-        }
-    }
-
-    private static final class SubjectPublicKeyInfoExtractor implements PublicKeyExtractor {
-        @Override
-        public ECPublicKey getPublicKey(final Object pemObject) throws PEMException {
-            final SubjectPublicKeyInfo subjectPublicKeyInfo = (SubjectPublicKeyInfo) pemObject;
-            final PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
-            if (!(publicKey instanceof ECPublicKey)) {
-                throw new PEMException("Public key is not an instance of ECPublicKey.");
-            }
-            return (ECPublicKey) publicKey;
-        }
-    }
-
-    private static PublicKeyExtractor getExtractor(final Object pemObject) throws PEMException {
-        return switch (pemObject) {
-            case PEMKeyPair ignored -> new PEMKeyPairExtractor();
-            case X509CertificateHolder ignored -> new X509CertificateHolderExtractor();
-            case SubjectPublicKeyInfo ignored -> new SubjectPublicKeyInfoExtractor();
-            default -> throw new PEMException("Invalid PEM object");
-        };
-    }
-
-    public static ECPublicKey getEcPublicKeyFromPemObject(final Object pemObject) throws PEMException {
-        final PublicKeyExtractor extractor = getExtractor(pemObject);
-        return extractor.getPublicKey(pemObject);
+    @Override
+    protected ECPublicKey castKey(PublicKey publicKey) {
+        return (ECPublicKey) publicKey;
     }
 
 }

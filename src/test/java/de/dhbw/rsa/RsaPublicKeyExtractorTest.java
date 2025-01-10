@@ -39,7 +39,8 @@ public class RsaPublicKeyExtractorTest {
                 -----END RSA PRIVATE KEY-----
                 """;
         final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
-        final RSAPublicKey rsaPublicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyPair);
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        final RSAPublicKey rsaPublicKey = rsaPublicKeyExtractor.getPublicKey(keyPair);
         assert Objects.equals(rsaPublicKey.getPublicExponent(), BigInteger.valueOf(65537));
         assert Objects.equals(rsaPublicKey.getModulus(), new BigInteger("8354710993758221462700056916743654678562458316647327533676261208190915370309700546509009539702734965121185359189735771167596256616153280001625727457561611"));
     }
@@ -58,7 +59,8 @@ public class RsaPublicKeyExtractorTest {
                 -----END RSA PRIVATE KEY-----
                 """;
         final PrivateKeyInfo keyInfo = readPrivateKeyInfo(testPrivateKeyInfo);
-        final RSAPublicKey rsaPublicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyInfo);
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        final RSAPublicKey rsaPublicKey = rsaPublicKeyExtractor.getPublicKey(keyInfo);
         assert Objects.equals(rsaPublicKey.getPublicExponent(), BigInteger.valueOf(65537));
         assert Objects.equals(rsaPublicKey.getModulus(), new BigInteger("12580039500852756484105714571772544426383396946885710400699434543206965072549168777678738858898337340443808731666387363484786064605609573759112437618790099"));
     }
@@ -72,7 +74,8 @@ public class RsaPublicKeyExtractorTest {
                 -----END PUBLIC KEY-----
                 """;
         final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
-        final RSAPublicKey rsaPublicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyInfo);
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        final RSAPublicKey rsaPublicKey = rsaPublicKeyExtractor.getPublicKey(keyInfo);
         assert Objects.equals(rsaPublicKey.getPublicExponent(), BigInteger.valueOf(65537));
         assert Objects.equals(rsaPublicKey.getModulus(), new BigInteger("9462127310943028450513446955298051246068106169818976319508148622091607268242929842057464753432526034171966724638379914356963896019954886942531223946184363"));
     }
@@ -92,7 +95,8 @@ public class RsaPublicKeyExtractorTest {
                 """;
 
         final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
-        final RSAPublicKey rsaPublicKey = RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(certificateHolder);
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        final RSAPublicKey rsaPublicKey = rsaPublicKeyExtractor.getPublicKey(certificateHolder);
         assert Objects.equals(rsaPublicKey.getPublicExponent(), BigInteger.valueOf(65537));
         assert Objects.equals(rsaPublicKey.getModulus(), new BigInteger("9367876150072090697440066621288661310608885474889923310005709210929803520665733645389903314573454165424857725023366367246023683414250447546346372052665457"));
     }
@@ -106,7 +110,8 @@ public class RsaPublicKeyExtractorTest {
                 -----END PUBLIC KEY-----
                 """;
         final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
-        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyInfo));
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> rsaPublicKeyExtractor.getPublicKey(keyInfo));
     }
 
     @Test
@@ -123,7 +128,8 @@ public class RsaPublicKeyExtractorTest {
                 -----END CERTIFICATE-----
                 """;
         final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
-        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(certificateHolder));
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> rsaPublicKeyExtractor.getPublicKey(certificateHolder));
     }
 
     @Test
@@ -136,12 +142,14 @@ public class RsaPublicKeyExtractorTest {
                 -----END EC PRIVATE KEY-----
                 """;
         final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
-        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject(keyPair));
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> rsaPublicKeyExtractor.getPublicKey(keyPair));
     }
 
     @Test
     public void throwExceptionOnInvalidPemObject() {
-        assertThrows(PEMException.class, () -> RsaPublicKeyExtractor.getRsaPublicKeyFromPemObject("test_input"));
+        final RsaPublicKeyExtractor rsaPublicKeyExtractor = new RsaPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> rsaPublicKeyExtractor.getPublicKey("test_input"));
     }
 
 }

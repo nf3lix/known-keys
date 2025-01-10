@@ -36,7 +36,8 @@ public class EcPublicKeyExtractorTest {
                 -----END EC PRIVATE KEY-----
                 """;
         final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
-        final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyPair);
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        final ECPublicKey ecPublicKey = ecPublicKeyExtractor.getPublicKey(keyPair);
 
         final ECCurve curve = new SecP256R1Curve();
         final BigInteger x = new BigInteger("12467572282102654442499181405833496531090552583884637003128218928464447348812");
@@ -60,7 +61,8 @@ public class EcPublicKeyExtractorTest {
                 -----END CERTIFICATE-----
                 """;
         final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
-        final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(certificateHolder);
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        final ECPublicKey ecPublicKey = ecPublicKeyExtractor.getPublicKey(certificateHolder);
 
         final ECCurve curve = new SecP256R1Curve();
         final BigInteger x = new BigInteger("3481016149925405259576293977989710538158770666165491448807298223437156015601");
@@ -78,7 +80,8 @@ public class EcPublicKeyExtractorTest {
                 -----END PUBLIC KEY-----
                 """;
         final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
-        final ECPublicKey ecPublicKey = EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyInfo);
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        final ECPublicKey ecPublicKey = ecPublicKeyExtractor.getPublicKey(keyInfo);
         final ECCurve curve = new SecP256R1Curve();
         final BigInteger x = new BigInteger("42134508838896037615597729412571348241399061755847904145515134493259224923712");
         final BigInteger y = new BigInteger("94962155699533225367980242393929424288013306610435794966719739023909263200356");
@@ -95,7 +98,8 @@ public class EcPublicKeyExtractorTest {
                 -----END PUBLIC KEY-----
                 """;
         final SubjectPublicKeyInfo keyInfo = readSubjectPublicKeyInfo(testPublicKey);
-        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyInfo));
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> ecPublicKeyExtractor.getPublicKey(keyInfo));
     }
 
     @Test
@@ -112,7 +116,8 @@ public class EcPublicKeyExtractorTest {
                 -----END CERTIFICATE-----
                 """;
         final X509CertificateHolder certificateHolder = readX509CertificateHolder(testCert);
-        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(certificateHolder));
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> ecPublicKeyExtractor.getPublicKey(certificateHolder));
     }
 
     @Test
@@ -129,12 +134,14 @@ public class EcPublicKeyExtractorTest {
                 -----END RSA PRIVATE KEY-----
                 """;
         final PEMKeyPair keyPair = readPEMKeyPair(testPrivateKeyPair);
-        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject(keyPair));
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> ecPublicKeyExtractor.getPublicKey(keyPair));
     }
 
     @Test
     public void throwExceptionOnInvalidPemObject() {
-        assertThrows(PEMException.class, () -> EcPublicKeyExtractor.getEcPublicKeyFromPemObject("test_input"));
+        final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
+        assertThrows(PEMException.class, () -> ecPublicKeyExtractor.getPublicKey("test_input"));
     }
 
 }
