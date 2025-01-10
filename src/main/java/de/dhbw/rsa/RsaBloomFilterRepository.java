@@ -10,6 +10,8 @@ import redis.clients.jedis.JedisPool;
 
 import java.security.interfaces.RSAPublicKey;
 
+import static de.dhbw.BloomFilterInitializer.RSA_BLOOM_FILTER_NAME;
+
 @Repository
 @Profile({"bloom_filter", "default"})
 public class RsaBloomFilterRepository implements PublicKeyRepository<RSAPublicKey> {
@@ -24,18 +26,18 @@ public class RsaBloomFilterRepository implements PublicKeyRepository<RSAPublicKe
 
     @Override
     public void addPublicKey(final RSAPublicKey publicKey) {
-        publicKeyClient.add(JedisConfig.RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
+        publicKeyClient.add(RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
     }
 
     @Override
     public boolean isProbablyKnown(final RSAPublicKey publicKey) {
-        return publicKeyClient.exists(JedisConfig.RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
+        return publicKeyClient.exists(RSA_BLOOM_FILTER_NAME, publicKey.getModulus().toString());
     }
 
     @Override
     public long getMemoryConsumption() {
         try (final Jedis jedis = jedisPool.getResource()) {
-            return jedis.memoryUsage(JedisConfig.RSA_BLOOM_FILTER_NAME);
+            return jedis.memoryUsage(RSA_BLOOM_FILTER_NAME);
         }
     }
 }

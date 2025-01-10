@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import static de.dhbw.BloomFilterInitializer.EC_BLOOM_FILTER_NAME;
+
 @Repository
 @Profile({"bloom_filter", "default"})
 public class EcBloomFilterRepository implements PublicKeyRepository<ECPublicKey> {
@@ -26,20 +28,20 @@ public class EcBloomFilterRepository implements PublicKeyRepository<ECPublicKey>
     public void addPublicKey(final ECPublicKey publicKey) {
         final ECPoint publicKeyPoint = publicKey.getQ();
         final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
-        publicKeyClient.add(JedisConfig.EC_BLOOM_FILTER_NAME, xCoordinate);
+        publicKeyClient.add(EC_BLOOM_FILTER_NAME, xCoordinate);
     }
 
     @Override
     public boolean isProbablyKnown(final ECPublicKey publicKey) {
         final ECPoint publicKeyPoint = publicKey.getQ();
         final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
-        return publicKeyClient.exists(JedisConfig.EC_BLOOM_FILTER_NAME, xCoordinate);
+        return publicKeyClient.exists(EC_BLOOM_FILTER_NAME, xCoordinate);
     }
 
     @Override
     public long getMemoryConsumption() {
         try (final Jedis jedis = jedisPool.getResource()) {
-            return jedis.memoryUsage(JedisConfig.EC_BLOOM_FILTER_NAME);
+            return jedis.memoryUsage(EC_BLOOM_FILTER_NAME);
         }
     }
 
