@@ -14,7 +14,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /*
     @ExceptionHandler(PEMException.class)
     public ResponseEntity<String> handlePEMException(final PEMException e) {
         logger.error(e.getMessage());
@@ -31,6 +30,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(final Exception e) {
         logger.error(e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-    }*/
+    }
 
 }
