@@ -2,10 +2,11 @@ package de.dhbw.ec;
 
 import de.dhbw.AbstractPublicKeyExtractor;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
-import org.bouncycastle.openssl.PEMException;
+import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
 
+@Component
 public class EcPublicKeyExtractor extends AbstractPublicKeyExtractor<ECPublicKey> {
 
     @Override

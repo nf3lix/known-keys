@@ -1,10 +1,11 @@
 package de.dhbw.ec;
 
+import de.dhbw.PublicKeyService;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EcPublicKeyService {
+public class EcPublicKeyService implements PublicKeyService<ECPublicKey> {
 
     private final EcPublicKeyRepository ecPublicKeyRepository;
 

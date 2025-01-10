@@ -45,6 +45,9 @@ public class EcPublicKeyControllerTest {
     private ResourceLoader resourceLoader;
 
     @MockitoBean
+    private EcPublicKeyExtractor ecPublicKeyExtractor;
+
+    @MockitoBean
     private EcPublicKeyService publicKeyService;
 
     @BeforeEach
@@ -54,28 +57,30 @@ public class EcPublicKeyControllerTest {
 
     @ParameterizedTest
     @MethodSource("provideEcKeyResources")
-    public void testEcKeyExists(final String resourcePath, final ECPoint expectedPoint) throws Exception {
+    public void testEcKeyExists(final String resourcePath) throws Exception {
         final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
+        when(ecPublicKeyExtractor.getPublicKey(any())).thenReturn(publicKeyStub());
 
         mockMvc.perform(multipart("/public-keys/ec/exists")
                         .file(mockFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Key known: true"));
-        verify(publicKeyService).isProbablyKnown(publicKeyFrom("secp256r1", expectedPoint));
+        verify(publicKeyService).isProbablyKnown(publicKeyStub());
     }
 
     @ParameterizedTest
     @MethodSource("provideEcKeyResources")
-    public void testEcKeyUpload(final String resourcePath, final ECPoint expectedPoint) throws Exception {
+    public void testEcKeyUpload(final String resourcePath) throws Exception {
         final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
+        when(ecPublicKeyExtractor.getPublicKey(any())).thenReturn(publicKeyStub());
 
         mockMvc.perform(multipart("/public-keys/ec")
                         .file(mockFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Public key stored successfully"));
-        verify(publicKeyService).addPublicKey(publicKeyFrom("secp256r1", expectedPoint));
+        verify(publicKeyService).addPublicKey(publicKeyStub());
     }
 
     @ParameterizedTest
@@ -100,31 +105,17 @@ public class EcPublicKeyControllerTest {
 
     private static Stream<Arguments> provideEcKeyResources() {
         return Stream.of(
-                Arguments.of("classpath:ec/TEST_EC_PUBLIC_KEY.PEM", ecPublicKeyPublicPoint()),
-                Arguments.of("classpath:ec/TEST_EC_PRIVATE_KEY.PEM", ecPrivateKeyPublicPoint()),
-                Arguments.of("classpath:ec/TEST_EC_CERT.PEM", ecCertPublicPoint())
+                Arguments.of("classpath:ec/TEST_EC_PUBLIC_KEY.PEM"),
+                Arguments.of("classpath:ec/TEST_EC_PRIVATE_KEY.PEM"),
+                Arguments.of("classpath:ec/TEST_EC_CERT.PEM")
         );
     }
 
-    private static ECPoint ecPublicKeyPublicPoint() {
-        return ecPoint(
+    private static ECPublicKey publicKeyStub() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+        return publicKeyFrom("secp256r1", ecPoint(
                 "42134508838896037615597729412571348241399061755847904145515134493259224923712",
                 "94962155699533225367980242393929424288013306610435794966719739023909263200356"
-        );
-    }
-
-    private static ECPoint ecCertPublicPoint() {
-        return ecPoint(
-                "3481016149925405259576293977989710538158770666165491448807298223437156015601",
-                "111809701729478374801122797272365083847701066388734389762440362091230466481343"
-        );
-    }
-
-    private static ECPoint ecPrivateKeyPublicPoint() {
-        return ecPoint(
-                "12467572282102654442499181405833496531090552583884637003128218928464447348812",
-                "65080115534543149538371136859567843899013310349629399871054168498913943812861"
-        );
+        ));
     }
 
     private static ECPoint ecPoint(final String x, final String y) {
@@ -135,16 +126,16 @@ public class EcPublicKeyControllerTest {
     }
 
     private static ECPublicKey publicKeyFrom(final String curve, final ECPoint point) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-        ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve);
-        ECParameterSpec ecParameterSpec = new ECParameterSpec(
+        final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve);
+        final ECParameterSpec ecParameterSpec = new ECParameterSpec(
                 ecSpec.getCurve(),
                 ecSpec.getG(),
                 ecSpec.getN(),
                 ecSpec.getH()
         );
 
-        ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, ecParameterSpec);
-        KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
+        final ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, ecParameterSpec);
+        final KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
         return (ECPublicKey) keyFactory.generatePublic(pubKeySpec);
     }
 

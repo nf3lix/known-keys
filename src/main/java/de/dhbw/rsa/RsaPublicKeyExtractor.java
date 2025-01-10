@@ -3,6 +3,7 @@ package de.dhbw.rsa;
 import de.dhbw.AbstractPublicKeyExtractor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMException;
+import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -13,6 +14,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
+@Component
 public class RsaPublicKeyExtractor extends AbstractPublicKeyExtractor<RSAPublicKey> {
 
     @Override

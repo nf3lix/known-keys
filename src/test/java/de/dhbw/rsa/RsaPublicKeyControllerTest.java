@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPublicKeySpec;
@@ -39,6 +40,9 @@ public class RsaPublicKeyControllerTest {
     private ResourceLoader resourceLoader;
 
     @MockitoBean
+    private RsaPublicKeyExtractor rsaPublicKeyExtractor;
+
+    @MockitoBean
     private RsaPublicKeyService publicKeyService;
 
     @BeforeEach
@@ -48,34 +52,34 @@ public class RsaPublicKeyControllerTest {
 
     @ParameterizedTest
     @MethodSource("provideRsaKeyResources")
-    public void testRsaKeyExists(final String resourcePath, final BigInteger expectedModulus) throws Exception {
+    public void testRsaKeyExists(final String resourcePath) throws Exception {
         final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
+        final RSAPublicKey publicKey = rsaPublicKey(
+                new BigInteger("9462127310943028450513446955298051246068106169818976319508148622091607268242929842057464753432526034171966724638379914356963896019954886942531223946184363"), BigInteger.valueOf(65537));
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
+        when(rsaPublicKeyExtractor.getPublicKey(any())).thenReturn(publicKey);
 
         mockMvc.perform(multipart("/public-keys/rsa/exists")
                         .file(mockFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Key known: true"));
-        verify(publicKeyService).isProbablyKnown(rsaPublicKey(
-                expectedModulus,
-                BigInteger.valueOf(65537)
-        ));
+        verify(publicKeyService).isProbablyKnown(publicKey);
     }
 
     @ParameterizedTest
     @MethodSource("provideRsaKeyResources")
-    public void testRsaKeyUpload(final String resourcePath, final BigInteger expectedModulus) throws Exception {
+    public void testRsaKeyUpload(final String resourcePath) throws Exception {
         final MockMultipartFile mockFile = getMockMultipartFile(resourceLoader, resourcePath);
+        final RSAPublicKey publicKey = rsaPublicKey(
+                new BigInteger("9462127310943028450513446955298051246068106169818976319508148622091607268242929842057464753432526034171966724638379914356963896019954886942531223946184363"), BigInteger.valueOf(65537));
         when(publicKeyService.isProbablyKnown(any())).thenReturn(true);
+        when(rsaPublicKeyExtractor.getPublicKey(any())).thenReturn(publicKey);
 
         mockMvc.perform(multipart("/public-keys/rsa")
                         .file(mockFile))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Public key stored successfully"));
-        verify(publicKeyService).addPublicKey(rsaPublicKey(
-                expectedModulus,
-                BigInteger.valueOf(65537)
-        ));
+        verify(publicKeyService).addPublicKey(publicKey);
     }
 
     @ParameterizedTest
@@ -100,9 +104,9 @@ public class RsaPublicKeyControllerTest {
 
     private static Stream<Arguments> provideRsaKeyResources() {
         return Stream.of(
-                Arguments.of("classpath:rsa/TEST_RSA_PUBLIC_KEY.PEM", new BigInteger("9462127310943028450513446955298051246068106169818976319508148622091607268242929842057464753432526034171966724638379914356963896019954886942531223946184363")),
-                Arguments.of("classpath:rsa/TEST_RSA_PRIVATE_KEY.PEM", new BigInteger("8354710993758221462700056916743654678562458316647327533676261208190915370309700546509009539702734965121185359189735771167596256616153280001625727457561611")),
-                Arguments.of("classpath:rsa/TEST_RSA_CERT.PEM", new BigInteger("9367876150072090697440066621288661310608885474889923310005709210929803520665733645389903314573454165424857725023366367246023683414250447546346372052665457"))
+                Arguments.of("classpath:rsa/TEST_RSA_PUBLIC_KEY.PEM"),
+                Arguments.of("classpath:rsa/TEST_RSA_PRIVATE_KEY.PEM"),
+                Arguments.of("classpath:rsa/TEST_RSA_CERT.PEM")
         );
     }
 

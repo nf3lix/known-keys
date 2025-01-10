@@ -1,11 +1,12 @@
 package de.dhbw.rsa;
 
+import de.dhbw.PublicKeyService;
 import org.springframework.stereotype.Service;
 
 import java.security.interfaces.RSAPublicKey;
 
 @Service
-public class RsaPublicKeyService {
+public class RsaPublicKeyService implements PublicKeyService<RSAPublicKey> {
 
     private final RsaPublicKeyRepository rsaPublicKeyRepository;
 

@@ -1,57 +1,14 @@
 package de.dhbw.ec;
 
+import de.dhbw.AbstractPublicKeyController;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
-import org.bouncycastle.openssl.PEMException;
-import org.bouncycastle.openssl.PEMParser;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import static de.dhbw.PEMFileValidator.validatePEMFile;
 
 @RestController
 @RequestMapping("/public-keys/ec")
-public class EcPublicKeyController {
-
-    private final EcPublicKeyService ecPublicKeyService;
-
-    public EcPublicKeyController(EcPublicKeyService ecPublicKeyService) {
-        this.ecPublicKeyService = ecPublicKeyService;
+public class EcPublicKeyController extends AbstractPublicKeyController<ECPublicKey> {
+    public EcPublicKeyController(final EcPublicKeyService ecPublicKeyService,
+                                 final EcPublicKeyExtractor ecPublicKeyExtractor) {
+        super(ecPublicKeyService, ecPublicKeyExtractor);
     }
-
-    @PostMapping(path = "/exists", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> keyExists(@RequestParam("file") final MultipartFile file) throws IOException {
-        validatePEMFile(file);
-        try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
-            final ECPublicKey publicKey = ecPublicKeyExtractor.getPublicKey(pemParser.readObject());
-            final boolean exists = ecPublicKeyService.isProbablyKnown(publicKey);
-            return ResponseEntity.ok("Key known: " + exists);
-        } catch (IOException e) {
-            throw new PEMException("Could not read key file: " + file.getName(), e);
-        }
-    }
-
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file) throws IOException {
-        validatePEMFile(file);
-        try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
-            final EcPublicKeyExtractor ecPublicKeyExtractor = new EcPublicKeyExtractor();
-            final ECPublicKey publicKey = ecPublicKeyExtractor.getPublicKey(pemParser.readObject());
-            ecPublicKeyService.addPublicKey(publicKey);
-            return ResponseEntity.ok("Public key stored successfully");
-        } catch (IOException e) {
-            throw new PEMException("Could not read key file: " + file.getName(), e);
-        }
-    }
-
-    @GetMapping(path = "/redis-memory-consumption")
-    public ResponseEntity<String> getMemoryConsumption() {
-        return ResponseEntity.ok(String.valueOf(ecPublicKeyService.getMemoryConsumption()));
-    }
-
 }
