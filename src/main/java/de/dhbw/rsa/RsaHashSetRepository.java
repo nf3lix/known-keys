@@ -1,5 +1,6 @@
 package de.dhbw.rsa;
 
+import de.dhbw.PublicKeyRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.Jedis;
@@ -9,7 +10,7 @@ import java.security.interfaces.RSAPublicKey;
 
 @Repository
 @Profile("set")
-public class RsaHashSetRepository implements RsaPublicKeyRepository {
+public class RsaHashSetRepository implements PublicKeyRepository<RSAPublicKey> {
 
     private final JedisPool jedisPool;
 

@@ -13,7 +13,8 @@ public class PEMFileValidator {
         if (!isValidPEMPublicKey(content) &&
                 !isValidPEMRSAPrivateKey(content) &&
                 !isValidPEMCert(content) &&
-                !isValidPEMECPrivateKey(content)
+                !isValidPEMECPrivateKey(content) &&
+                !isValidPrivateKey(content)
         ) {
             throw new PEMException("Invalid PEM file");
         }
@@ -21,6 +22,10 @@ public class PEMFileValidator {
 
     private static boolean isValidPEMPublicKey(final String content) {
         return content.startsWith("-----BEGIN PUBLIC KEY-----") && content.endsWith("-----END PUBLIC KEY-----");
+    }
+
+    private static boolean isValidPrivateKey(final String content) {
+        return content.startsWith("-----BEGIN PRIVATE KEY-----") && content.endsWith("-----END PRIVATE KEY-----");
     }
 
     private static boolean isValidPEMRSAPrivateKey(final String content) {

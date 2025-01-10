@@ -10,12 +10,12 @@ import java.security.PublicKey;
 public class EcPublicKeyExtractor extends AbstractPublicKeyExtractor<ECPublicKey> {
 
     @Override
-    protected boolean isValidKeyType(PublicKey publicKey) {
+    protected boolean isValidKeyType(final PublicKey publicKey) {
         return publicKey instanceof ECPublicKey;
     }
 
     @Override
-    protected ECPublicKey castKey(PublicKey publicKey) {
+    protected ECPublicKey castKey(final PublicKey publicKey) {
         return (ECPublicKey) publicKey;
     }
 

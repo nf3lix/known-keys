@@ -1,6 +1,7 @@
 package de.dhbw.rsa;
 
 import de.dhbw.JedisConfig;
+import de.dhbw.PublicKeyRepository;
 import io.rebloom.client.Client;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.security.interfaces.RSAPublicKey;
 
 @Repository
 @Profile({"bloom_filter", "default"})
-public class RsaBloomFilterRepository implements RsaPublicKeyRepository {
+public class RsaBloomFilterRepository implements PublicKeyRepository<RSAPublicKey> {
 
     private final Client publicKeyClient;
     private final JedisPool jedisPool;

@@ -5,10 +5,7 @@ import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.PEMException;
 import org.springframework.stereotype.Component;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -23,7 +20,7 @@ public class RsaPublicKeyExtractor extends AbstractPublicKeyExtractor<RSAPublicK
     }
 
     @Override
-    protected RSAPublicKey castKey(final PublicKey publicKey) throws PEMException {
+    protected RSAPublicKey castKey(final PublicKey publicKey) {
         return (RSAPublicKey) publicKey;
     }
 
@@ -36,10 +33,12 @@ public class RsaPublicKeyExtractor extends AbstractPublicKeyExtractor<RSAPublicK
                         rsaPrivateCrtKey.getModulus(), rsaPrivateCrtKey.getPublicExponent());
                 KeyFactory keyFactory;
                 try {
-                    keyFactory = KeyFactory.getInstance("RSA");
+                    keyFactory = KeyFactory.getInstance("RSA", "BC");
                     return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
                 } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                     throw new PEMException("Error generating public key from private key", e);
+                } catch (NoSuchProviderException e) {
+                    throw new RuntimeException(e);
                 }
             } else {
                 throw new PEMException("Private key is not an instance of RSAPrivateCrtKey.");

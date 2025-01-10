@@ -1,5 +1,6 @@
 package de.dhbw.ec;
 
+import de.dhbw.PublicKeyRepository;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.math.ec.ECPoint;
 import org.springframework.context.annotation.Profile;
@@ -9,7 +10,7 @@ import redis.clients.jedis.JedisPool;
 
 @Repository
 @Profile("set")
-public class EcHashSetRepository implements EcPublicKeyRepository {
+public class EcHashSetRepository implements PublicKeyRepository<ECPublicKey> {
 
     private final JedisPool jedisPool;
     private final String EC_SET_NAME = "ec_public_point_set";
@@ -19,7 +20,7 @@ public class EcHashSetRepository implements EcPublicKeyRepository {
     }
 
     @Override
-    public void addPublicKey(ECPublicKey publicKey) {
+    public void addPublicKey(final ECPublicKey publicKey) {
         final ECPoint publicKeyPoint = publicKey.getQ();
         final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
         try (final Jedis jedis = jedisPool.getResource()) {
@@ -28,7 +29,7 @@ public class EcHashSetRepository implements EcPublicKeyRepository {
     }
 
     @Override
-    public boolean isProbablyKnown(ECPublicKey publicKey) {
+    public boolean isProbablyKnown(final ECPublicKey publicKey) {
         final ECPoint publicKeyPoint = publicKey.getQ();
         final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
         try (final Jedis jedis = jedisPool.getResource()) {

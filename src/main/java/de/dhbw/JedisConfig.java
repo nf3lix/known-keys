@@ -12,6 +12,7 @@ public class JedisConfig {
 
     public final static String RSA_BLOOM_FILTER_NAME = "rsa_modulus";
     public final static String EC_BLOOM_FILTER_NAME = "ec_public_point";
+    public final static String EDEC_BLOOM_FILTER_NAME = "edec_public_point";
 
     @Value("${redis.host}")
     private String redisHost;
@@ -39,6 +40,7 @@ public class JedisConfig {
         try {
             bloomFilterClient.createFilter(RSA_BLOOM_FILTER_NAME, 1_000_000_000L, 0.01);
             bloomFilterClient.createFilter(EC_BLOOM_FILTER_NAME, 1_000_000_000L, 0.01);
+            bloomFilterClient.createFilter(EDEC_BLOOM_FILTER_NAME, 1_000_000_000L, 0.01);
         } catch (Exception e) {
             System.out.println("Bloom filter already exists");
         }
