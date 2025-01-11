@@ -1,48 +1,27 @@
 package de.dhbw.ec;
 
-import de.dhbw.JedisConfig;
-import de.dhbw.PublicKeyRepository;
+import de.dhbw.AbstractBloomFilterRepository;
 import io.rebloom.client.Client;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.math.ec.ECPoint;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import static de.dhbw.BloomFilterInitializer.EC_BLOOM_FILTER_NAME;
 
 @Repository
 @Profile({"bloom_filter", "default"})
-public class EcBloomFilterRepository implements PublicKeyRepository<ECPublicKey> {
+public class EcBloomFilterRepository extends AbstractBloomFilterRepository<ECPublicKey> {
 
-    private final Client publicKeyClient;
-    private final JedisPool jedisPool;
-
-    public EcBloomFilterRepository(final Client publicKeyClient, JedisPool jedisPool) {
-        this.publicKeyClient = publicKeyClient;
-        this.jedisPool = jedisPool;
+    public EcBloomFilterRepository(final Client publicKeyClient, final JedisPool jedisPool) {
+        super(publicKeyClient, jedisPool, EC_BLOOM_FILTER_NAME);
     }
 
     @Override
-    public void addPublicKey(final ECPublicKey publicKey) {
+    protected String getKeyRepresentation(final ECPublicKey publicKey) {
         final ECPoint publicKeyPoint = publicKey.getQ();
-        final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
-        publicKeyClient.add(EC_BLOOM_FILTER_NAME, xCoordinate);
-    }
-
-    @Override
-    public boolean isProbablyKnown(final ECPublicKey publicKey) {
-        final ECPoint publicKeyPoint = publicKey.getQ();
-        final String xCoordinate = publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
-        return publicKeyClient.exists(EC_BLOOM_FILTER_NAME, xCoordinate);
-    }
-
-    @Override
-    public long getMemoryConsumption() {
-        try (final Jedis jedis = jedisPool.getResource()) {
-            return jedis.memoryUsage(EC_BLOOM_FILTER_NAME);
-        }
+        return publicKeyPoint.getDetachedPoint().getXCoord().toBigInteger().toString();
     }
 
 }
