@@ -25,24 +25,15 @@ public class RsaPublicKeyExtractor extends AbstractPublicKeyExtractor<RSAPublicK
     }
 
     @Override
-    public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException {
+    public RSAPublicKey getPublicKey(final Object pemObject) throws PEMException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
         if (pemObject instanceof PrivateKeyInfo privateKeyInfo) {
             final PrivateKey privateKey = converter.getPrivateKey(privateKeyInfo);
-            if (privateKey instanceof RSAPrivateCrtKey rsaPrivateCrtKey) {
-                RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(
-                        rsaPrivateCrtKey.getModulus(), rsaPrivateCrtKey.getPublicExponent());
-                KeyFactory keyFactory;
-                try {
-                    keyFactory = KeyFactory.getInstance("RSA", "BC");
-                    return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                    throw new PEMException("Error generating public key from private key", e);
-                } catch (NoSuchProviderException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                throw new PEMException("Private key is not an instance of RSAPrivateCrtKey.");
-            }
+            final RSAPrivateCrtKey rsaPrivateCrtKey = (RSAPrivateCrtKey) privateKey;
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(
+                    rsaPrivateCrtKey.getModulus(), rsaPrivateCrtKey.getPublicExponent());
+            KeyFactory keyFactory;
+            keyFactory = KeyFactory.getInstance("RSA", "BC");
+            return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
         } else {
             return super.getPublicKey(pemObject);
         }

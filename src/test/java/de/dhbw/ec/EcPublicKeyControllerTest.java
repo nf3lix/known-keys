@@ -1,33 +1,28 @@
 package de.dhbw.ec;
 
 import de.dhbw.GlobalExceptionHandler;
-import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.jce.spec.ECParameterSpec;
-import org.bouncycastle.jce.spec.ECPublicKeySpec;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.stream.Stream;
 
 import static de.dhbw.PublicKeyControllerTestUtil.*;
+import static de.dhbw.ec.EcTestUtil.ecPoint;
+import static de.dhbw.ec.EcTestUtil.ecPublicKey;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -112,31 +107,12 @@ public class EcPublicKeyControllerTest {
     }
 
     private static ECPublicKey publicKeyStub() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
-        return publicKeyFrom("secp256r1", ecPoint(
+        return ecPublicKey("secp256r1", ecPoint(
                 "42134508838896037615597729412571348241399061755847904145515134493259224923712",
                 "94962155699533225367980242393929424288013306610435794966719739023909263200356"
         ));
     }
 
-    private static ECPoint ecPoint(final String x, final String y) {
-        final ECCurve curve = new SecP256R1Curve();
-        final BigInteger xCoord = new BigInteger(x);
-        final BigInteger yCoord = new BigInteger(y);
-        return curve.createPoint(xCoord, yCoord);
-    }
 
-    private static ECPublicKey publicKeyFrom(final String curve, final ECPoint point) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-        final ECNamedCurveParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(curve);
-        final ECParameterSpec ecParameterSpec = new ECParameterSpec(
-                ecSpec.getCurve(),
-                ecSpec.getG(),
-                ecSpec.getN(),
-                ecSpec.getH()
-        );
-
-        final ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(point, ecParameterSpec);
-        final KeyFactory keyFactory = KeyFactory.getInstance("ECDSA", "BC");
-        return (ECPublicKey) keyFactory.generatePublic(pubKeySpec);
-    }
 
 }

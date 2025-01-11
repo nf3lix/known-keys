@@ -11,8 +11,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Objects;
 
 import static de.dhbw.PublicKeyExtractorTestUtil.*;
@@ -26,7 +29,7 @@ public class RsaPublicKeyExtractorTest {
     }
 
     @Test
-    public void getPublicKeyFromPEMKeyPair() throws IOException {
+    public void getPublicKeyFromPEMKeyPair() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         final String testPrivateKeyPair = """
                 -----BEGIN RSA PRIVATE KEY-----
                 MIIBOQIBAAJBAJ+E+gdRqePIUTvZosN5sxHN5KqkGC90FE61qmXEO4xCd3NNVmXv
@@ -46,7 +49,7 @@ public class RsaPublicKeyExtractorTest {
     }
 
     @Test
-    public void getPublicKeyFromPrivateKeyInfo() throws IOException {
+    public void getPublicKeyFromPrivateKeyInfo() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         final String testPrivateKeyInfo = """
                 -----BEGIN RSA PRIVATE KEY-----
                 MIIBPAIBAAJBAPAx88NsQW4/A2/JJrcZHSP+KD7qLtIyJ5qss+rWy+7+j7iBIDE5

@@ -14,6 +14,8 @@ import static java.util.Map.*;
 
 public class PEMFileValidator {
 
+    private PEMFileValidator() {}
+
     private static final List<Map.Entry<String, String>> PEM_FILE_MARKERS = Arrays.asList(
             entry("-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----"),
             entry("-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----"),

@@ -9,7 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 import static de.dhbw.PEMFileValidator.validatePEMFile;
 
@@ -31,7 +34,7 @@ public abstract class AbstractPublicKeyController<K extends PublicKey> {
             final K publicKey = publicKeyExtractor.getPublicKey(pemObject);
             final boolean exists = publicKeyService.isProbablyKnown(publicKey);
             return ResponseEntity.ok("Key known: " + exists);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
         }
     }
@@ -44,7 +47,7 @@ public abstract class AbstractPublicKeyController<K extends PublicKey> {
             final K publicKey = publicKeyExtractor.getPublicKey(pemObject);
             publicKeyService.addPublicKey(publicKey);
             return ResponseEntity.ok("Public key stored successfully");
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
             throw new PEMException("Could not read key file: " + file.getName(), e);
         }
     }

@@ -14,7 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
 
 import static de.dhbw.PublicKeyExtractorTestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,7 +30,7 @@ public class EcPublicKeyExtractorTest {
     }
 
     @Test
-    public void getPublicKeyFromPEMKeyPair() throws IOException {
+    public void getPublicKeyFromPEMKeyPair() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         final String testPrivateKeyPair = """
                 -----BEGIN EC PRIVATE KEY-----
                 MHcCAQEEIEWwG/GnVceXk0THOVjrDrer8pboEpo6p8PNKa+E27AcoAoGCCqGSM49
@@ -72,7 +75,7 @@ public class EcPublicKeyExtractorTest {
     }
 
     @Test
-    public void getPublicKeyFromPublicKeyInfo() throws IOException {
+    public void getPublicKeyFromPublicKeyInfo() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
         final String testPublicKey = """
                 -----BEGIN PUBLIC KEY-----
                 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEXSdJcWoNZ61BrtHcu9ouSfWf2II/

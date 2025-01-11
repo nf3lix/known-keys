@@ -2,7 +2,6 @@ package de.dhbw.rsa;
 
 import de.dhbw.AbstractPublicKeyController;
 import de.dhbw.GlobalExceptionHandler;
-import de.dhbw.PublicKeyExtractor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMException;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,15 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPublicKeySpec;
 import java.util.stream.Stream;
 
 import static de.dhbw.PublicKeyControllerTestUtil.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static de.dhbw.rsa.RsaTestUtils.rsaPublicKey;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -139,12 +135,6 @@ public class RsaPublicKeyControllerTest {
                 Arguments.of("classpath:rsa/TEST_RSA_PRIVATE_KEY.PEM"),
                 Arguments.of("classpath:rsa/TEST_RSA_CERT.PEM")
         );
-    }
-
-    private static RSAPublicKey rsaPublicKey(final BigInteger modulus, final BigInteger publicExponent) throws Exception {
-        RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulus, publicExponent);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
-        return (RSAPublicKey) keyFactory.generatePublic(rsaPublicKeySpec);
     }
 
 }

@@ -6,7 +6,10 @@ import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 public abstract class AbstractPublicKeyExtractor<K extends PublicKey> implements PublicKeyExtractor<K> {
 
@@ -15,7 +18,7 @@ public abstract class AbstractPublicKeyExtractor<K extends PublicKey> implements
     protected abstract K castKey(PublicKey publicKey) throws PEMException;
 
     @Override
-    public K getPublicKey(final Object pemObject) throws PEMException {
+    public K getPublicKey(final Object pemObject) throws PEMException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
         try {
             if (pemObject instanceof PEMKeyPair pemKeyPair) {
                 final PublicKey publicKey = converter.getPublicKey(pemKeyPair.getPublicKeyInfo());
