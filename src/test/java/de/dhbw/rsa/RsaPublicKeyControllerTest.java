@@ -1,8 +1,12 @@
 package de.dhbw.rsa;
 
+import de.dhbw.AbstractPublicKeyController;
 import de.dhbw.GlobalExceptionHandler;
+import de.dhbw.PublicKeyExtractor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -10,10 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -23,6 +30,8 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.stream.Stream;
 
 import static de.dhbw.PublicKeyControllerTestUtil.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -91,6 +100,28 @@ public class RsaPublicKeyControllerTest {
                 .andExpect(content().string("Invalid key file provided."));
 
         verifyNoInteractions(publicKeyService);
+    }
+
+    @Test
+    void testEndpointIOException() throws IOException {
+        AbstractPublicKeyController<RSAPublicKey> publicKeyController = new AbstractPublicKeyController<>(publicKeyService, rsaPublicKeyExtractor) {
+        };
+        final MultipartFile fileMock = mock(MultipartFile.class);
+        when(fileMock.getOriginalFilename()).thenReturn("file");
+        when(fileMock.getContentType()).thenReturn(MediaType.MULTIPART_FORM_DATA_VALUE);
+        when(fileMock.getBytes()).thenReturn("-----BEGIN CERTIFICATE-----test-----END CERTIFICATE-----".getBytes());
+        doThrow(new IOException("Test IOException")).when(fileMock).getInputStream();
+        assertThrows(PEMException.class, () -> publicKeyController.keyExists(fileMock));
+        assertThrows(PEMException.class, () -> publicKeyController.uploadKey(fileMock));
+    }
+
+    @Test
+    public void testMemoryConsumption() throws Exception {
+        when(publicKeyService.getMemoryConsumption()).thenReturn(10L);
+        mockMvc.perform(get("/public-keys/rsa/redis-memory-consumption"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("10"));
+        verify(publicKeyService).getMemoryConsumption();
     }
 
     private static Stream<Arguments> provideInvalidFileTestData() {
