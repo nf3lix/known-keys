@@ -1,6 +1,5 @@
 package de.dhbw.ec;
 
-import de.dhbw.rsa.RsaBloomFilterRepository;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +17,11 @@ import static de.dhbw.ec.EcTestUtil.ecPoint;
 import static de.dhbw.ec.EcTestUtil.ecPublicKey;
 
 @SpringBootTest
-@ActiveProfiles("set")
-public class EcHashSetRepositoryTest {
+@ActiveProfiles("cuckoo_filter")
+public class EcCuckooFilterRepositoryTest {
 
     @Autowired
-    private EcHashSetRepository ecHashSetRepository;
+    private EcCuckooFilterRepository ecCuckooFilterRepository;
 
     @BeforeEach
     void setUp() {
@@ -36,7 +35,7 @@ public class EcHashSetRepositoryTest {
                 xCoord,
                 "94962155699533225367980242393929424288013306610435794966719739023909263200356"
         ));
-        final String keyRepresentation = ecHashSetRepository.getKeyRepresentation(publicKeyStub);
+        final String keyRepresentation = ecCuckooFilterRepository.getKeyRepresentation(publicKeyStub);
         assert keyRepresentation.equals(xCoord);
     }
 
