@@ -53,7 +53,7 @@ Running locally requires a local installation of Docker. The project depends on 
 
 ### Run with docker compose
 1. `docker-compose up -d`
-2. Access [Swagger UI](http://localhost:8080/swagger-ui/)
+2. Access [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
 ### Sample requests
 RSA:
@@ -83,7 +83,7 @@ Run app with maven:
 1. `docker run --name redis-bloom -p 6380:6379 -d redislabs/rebloom:latest`
 2. `mvn clean install`
 3. `mvn spring-boot:run`
-4. Access [Swagger UI](http://localhost:8080/swagger-ui/)
+4. Access [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
 ### Storage Efficiency
 To compare the storage efficiency of Bloom Filters and Cuckoo Filters, both were implemented using
