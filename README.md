@@ -41,10 +41,15 @@ As a follow-up task to this project, a comparison of both data structures for th
 RSA private keys `(m, e, d)` consists of the modulus `m`, the public exponent `e`, and the private exponent `d`. The 
 public key contains only `(m, e)`, which is the relevant information for the Known Keys Database. For the public 
 exponent, the value 65537 is very often used. Since only probabilistic values are provided due to the limitations 
-mentioned before, storing `d` is considered unnecessary overhead and is thus omitted. When storing an RSA public key, 
-only the modulus `m` is added to the Bloom filter or Cuckoo filter.
+mentioned before, storing `d` is considered unnecessary overhead and is omitted. When storing an RSA public key, only 
+the modulus `m` is added to the Bloom filter or Cuckoo filter.
 
-EC: tbd
+An EC Public public key is generated through point multiplication on an elliptic curve. A base point `G` is multiplied 
+by the private key `d`, resulting in the public key `P` with coordinates `x` and `y`. It is relatively easy to compute 
+`P` but relatively difficult to compute `d` from `P`. In addition to the public point `P`, the curve parameters are 
+decisive information public key. It is recommended to use a standardized curve for this purpose [[3]](https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_V-2-0_pdf.pdf). 
+Assuming that false positives are acceptable and that the occurrence of the same `P` with different curve parameters is 
+unlikely, these are omitted during storage. The same applies to the `y` coordinate, thus only `x` is stored.
 
 ## Run locally
 Running locally requires a local installation of Docker. The project depends on the following components:
@@ -100,10 +105,10 @@ For filters with a capacity of 1 billion, the following values for memory consum
 | Bloom Filter   | 1378469320                  |
 | Cuckoo Filter  | 1073741936                  |
 
-Observed memory consumption for both filters in Redis remains constant.
+With this capacity, memory consumption for both filters in Redis remains constant.
 In this case, a Cuckoo Filter is more storage efficient. However, this does not allow for a profound decision for one of 
-the data structures. The performance of read and write operations must also be considered.
-I ran some rudimentary tests, but didn't get any significant results yet.
+the data structures. The performance of read and write operations must also be considered. Some rudimentary tests have 
+not yet yielded significant results
 
 # Limitations
 - Currently, only PEM is supported as a format for key upload. OpenSSH uses a slightly different PEM format for some key types that is not supported out-of-the-box by Bouncy Castle. For SSH keys with RSA, a valid PEM file can be created: `ssh-keygen -t rsa -b 2048 -m PEM`
@@ -117,3 +122,4 @@ I ran some rudimentary tests, but didn't get any significant results yet.
 # References
 - [1] https://www.geeksforgeeks.org/bloom-filters-introduction-and-python-implementation/
 - [2] https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf
+- [3] https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_V-2-0_pdf.pdf
