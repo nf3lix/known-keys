@@ -1,6 +1,6 @@
 package de.dhbw.rsa;
 
-import de.dhbw.AbstractBloomFilterRepository;
+import de.dhbw.bloom.AbstractBloomFilterRepository;
 import io.rebloom.client.Client;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import redis.clients.jedis.JedisPool;
 
 import java.security.interfaces.RSAPublicKey;
 
-import static de.dhbw.BloomFilterInitializer.RSA_BLOOM_FILTER_NAME;
+import static de.dhbw.bloom.BloomFilterInitializer.RSA_BLOOM_FILTER_NAME;
 
 @Repository
 @Profile({"bloom_filter", "default"})

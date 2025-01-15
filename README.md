@@ -1,10 +1,10 @@
 # Known keys database
 The project's goal is to provide a database that stores publicly known public keys. A possible application 
 scenario is a Certificate Authority that wants to sign a public key and needs to check if it already knows it. It might 
-be also useful to store leaked or keys known for any other reason that should not be reused. Characteristic of this use 
+be also useful to store keys that are leaked or known for any other reason and should not be reused. Characteristic of this use 
 case is the large amount of data. According to the Certificate Transparency Initiative 
-(https://certificate.transparency.dev/), over 11 billion certificates have been registered since 2013. Besides 
-certificates, public key cryptography is also used in other areas, such as for SSH. This underscores the importance of a 
+(https://certificate.transparency.dev/), over 11 billion certificates have been registered by the initiative since 2013. 
+Besides certificates, public key cryptography is also used in other areas, such as for SSH. This underscores the importance of a 
 performant solution. The focus of this project is on RSA and EC. However, the code can be easily extended to other 
 cryptosystems. It could make sense to extend it to Ed25519 which is used by default for SSH. Currently, only the PEM 
 format is supported for uploading public keys.
@@ -16,13 +16,13 @@ that also allows for performant checking.
 One possible solution is the use of a Bloom filter. A Bloom filter is a probabilistic data structure that checks whether 
 an element is part of a set. It consists of a bit array and uses multiple hash functions. When adding an element, the 
 bits at the positions calculated by the hash functions are set to 1. To check an element, its hash values are calculated 
-and checked to see if all the corresponding bits in the array are set to 1. [1]
+and checked to see if all the corresponding bits in the array are set to 1. [[1]](https://www.geeksforgeeks.org/bloom-filters-introduction-and-python-implementation/)
 
 In theory, a Bloom filter can add an unlimited number of elements without changing its size. However, this increases the 
 false positive rate. False negatives do not occur. If the filter indicates that an element is present, it is only present 
 with a certain probability. If the filter indicates that an element is not present, then it is definitely not present. 
 The error rate depends on the array size and the number of hash functions. A disadvantage of a Bloom filter is that 
-elements cannot be deleted, as resetting a single bit could affect multiple elements. [1]
+elements cannot be deleted, as resetting a single bit could affect multiple elements. [[1]](https://www.geeksforgeeks.org/bloom-filters-introduction-and-python-implementation/)
 
 If a certain error rate can be accepted and there's no need for deleting elements, a Bloom filter can be a suitable data 
 structure. For our use case, this is assumed. It is assumed that keys can be generated performantly. If the Bloom filter 
@@ -30,15 +30,15 @@ falsely claims that a generated public key is known, a new key can simply be gen
 false positive. Likewise, there is no reason to delete a known public key.
 
 The Cuckoo filter is another data structure that, depending on the error rate, allows for more performant write and 
-check operations than a Bloom filter. According to [2], a Cuckoo filter requires less memory per element than a Bloom 
-filter for error rates greater than 3%. Check operations are more performant with a Cuckoo filter than with a Bloom 
+check operations than a Bloom filter. According to [[2]](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), a Cuckoo filter requires less memory per element than a Bloom 
+filter for error rates greater than <3%. Check operations are more performant with a Cuckoo filter than with a Bloom 
 filter. Additionally, deleting elements from a Cuckoo filter is possible. However, the throughput of insert operations 
-decreases as the number of elements already in the filter increases. [2]
+decreases as the number of elements already in the filter increases. [[2]](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf)
 
-As a follow-up task, a comparison of both data structures for the use case should be conducted.
+As a follow-up task to this project, a comparison of both data structures for the use case should be conducted.
 
-## What store in the filter?
-An RSA private key `(m, e, d)` consists of the modulus `m`, the public exponent `e`, and the private exponent `d`. The 
+## What to store in the filter?
+RSA private keys `(m, e, d)` consists of the modulus `m`, the public exponent `e`, and the private exponent `d`. The 
 public key contains only `(m, e)`, which is the relevant information for the Known Keys Database. For the public 
 exponent, the value 65537 is very often used. Since only probabilistic values are provided due to the limitations 
 mentioned before, storing `d` is considered unnecessary overhead and is thus omitted. When storing an RSA public key, 

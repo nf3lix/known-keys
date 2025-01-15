@@ -1,4 +1,4 @@
-package de.dhbw;
+package de.dhbw.bloom;
 
 import io.rebloom.client.Client;
 import jakarta.annotation.PostConstruct;
@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-
+/**
+ * Component for initializing Bloom filters in the application.
+ * This class is active by default.
+ */
 @Component
 @Profile({"bloom_filter", "default"})
 public class BloomFilterInitializer {

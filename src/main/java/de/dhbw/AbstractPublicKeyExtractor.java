@@ -11,12 +11,27 @@ import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
+/**
+ * Base class for extracting a Public Key object from a generic object as provided in the controller class
+ * @param <K> the type of Public Keys that are subject to the service (e.g. RSAPublicKey)
+ */
 public abstract class AbstractPublicKeyExtractor<K extends PublicKey> implements PublicKeyExtractor<K> {
 
     protected final JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
     protected abstract boolean isValidKeyType(PublicKey publicKey);
     protected abstract K castKey(PublicKey publicKey) throws PEMException;
 
+    /**
+     * Returns a Public Key object from a generic object, depending on its class. Currently supported classes:
+     * PEMKeyPair, SubjectPublicKeyInfo, X509CertificateHolder. This method might be overwritten, depending on the
+     * used cryptosystem.
+     * @param pemObject generic object
+     * @return Public Key object, depending on K (e.g. RSAPublicKey)
+     * @throws PEMException if provided object is not instance of a supported class
+     * @throws NoSuchAlgorithmException if a public key needs to be constructed and given algorithm is not known (e.g. when a class overriding this method creates a public key from a private key)
+     * @throws NoSuchProviderException if a public key needs to be constructed and given provider is not known (e.g. when a class overriding this method creates a public key from a private key)
+     * @throws InvalidKeySpecException if a public key needs to be constructed and the key spec is invalid (e.g. when a class overriding this method creates a public key from a private key)
+     */
     @Override
     public K getPublicKey(final Object pemObject) throws PEMException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
         try {

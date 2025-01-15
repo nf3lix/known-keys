@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
 
+/**
+ * Class for extracting ECPublicKey from an object
+ */
 @Component
 public class EcPublicKeyExtractor extends AbstractPublicKeyExtractor<ECPublicKey> {
 

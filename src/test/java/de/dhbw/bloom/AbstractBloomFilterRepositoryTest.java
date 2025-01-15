@@ -1,4 +1,4 @@
-package de.dhbw;
+package de.dhbw.bloom;
 
 import io.rebloom.client.Client;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -17,24 +17,24 @@ import static de.dhbw.rsa.RsaTestUtils.rsaPublicKey;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class AbstractCuckooFilterRepositoryTest {
+public class AbstractBloomFilterRepositoryTest {
 
     @MockitoBean
-    private Client cuckooFilterClient;
+    private Client bloomFilterClient;
 
     @MockitoBean
     private JedisPool jedisPool;
 
-    AbstractCuckooFilterRepository<RSAPublicKey> cuckooFilterRepository;
+    AbstractBloomFilterRepository<RSAPublicKey> bloomFilterRepository;
 
     private RSAPublicKey publicKeyStub;
 
-    private final static String FILTER_NAME = "SET_NAME";
+    private final static String FILTER_NAME = "FILTER_NAME";
 
     @BeforeEach
     void setUp() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
-        cuckooFilterRepository = new AbstractCuckooFilterRepository<>(cuckooFilterClient, jedisPool, FILTER_NAME) {
+        bloomFilterRepository = new AbstractBloomFilterRepository<>(bloomFilterClient, jedisPool, FILTER_NAME) {
             @Override
             protected String getKeyRepresentation(RSAPublicKey publicKey) {
                 return "KEY_REPRESENTATION";
@@ -47,24 +47,24 @@ public class AbstractCuckooFilterRepositoryTest {
 
     @Test
     public void testAddPublicKey() {
-        cuckooFilterRepository.addPublicKey(publicKeyStub);
-        verify(cuckooFilterClient).cfAdd(FILTER_NAME, "KEY_REPRESENTATION");
+        bloomFilterRepository.addPublicKey(publicKeyStub);
+        verify(bloomFilterClient).add(FILTER_NAME, "KEY_REPRESENTATION");
     }
 
     @Test
     public void testPublicKeyExistsTrue() {
-        when(cuckooFilterClient.cfExists(FILTER_NAME, "KEY_REPRESENTATION")).thenReturn(true);
-        final boolean isKnown = cuckooFilterRepository.isProbablyKnown(publicKeyStub);
+        when(bloomFilterClient.exists(FILTER_NAME, "KEY_REPRESENTATION")).thenReturn(true);
+        final boolean isKnown = bloomFilterRepository.isProbablyKnown(publicKeyStub);
         assert isKnown;
-        verify(cuckooFilterClient).cfExists(FILTER_NAME, "KEY_REPRESENTATION");
+        verify(bloomFilterClient).exists(FILTER_NAME, "KEY_REPRESENTATION");
     }
 
     @Test
     public void testPublicKeyExistsFalse() {
-        when(cuckooFilterClient.cfExists(FILTER_NAME, "KEY_REPRESENTATION")).thenReturn(false);
-        final boolean isKnown = cuckooFilterRepository.isProbablyKnown(publicKeyStub);
+        when(bloomFilterClient.exists(FILTER_NAME, "KEY_REPRESENTATION")).thenReturn(false);
+        final boolean isKnown = bloomFilterRepository.isProbablyKnown(publicKeyStub);
         assert !isKnown;
-        verify(cuckooFilterClient).cfExists(FILTER_NAME, "KEY_REPRESENTATION");
+        verify(bloomFilterClient).exists(FILTER_NAME, "KEY_REPRESENTATION");
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AbstractCuckooFilterRepositoryTest {
         final Jedis jedis = mock(Jedis.class);
         when(jedis.memoryUsage(FILTER_NAME)).thenReturn(42L);
         when(jedisPool.getResource()).thenReturn(jedis);
-        final long memoryConsumption = cuckooFilterRepository.getMemoryConsumption();
+        final long memoryConsumption = bloomFilterRepository.getMemoryConsumption();
         assert memoryConsumption == 42L;
         verify(jedis).memoryUsage(FILTER_NAME);
     }

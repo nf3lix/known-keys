@@ -1,5 +1,7 @@
 package de.dhbw;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.PEMParser;
 import org.springframework.http.MediaType;
@@ -26,8 +28,10 @@ public abstract class AbstractPublicKeyController<K extends PublicKey> {
         this.publicKeyExtractor = publicKeyExtractor;
     }
 
+    @Operation(summary = "Check probabilistically if given public key is known.")
     @PostMapping(path = "/exists", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> keyExists(@RequestParam("file") final MultipartFile file) throws IOException {
+    public ResponseEntity<String> keyExists(@Parameter(description = "Public key in PEM format as Multipart Form Data", required = true)
+                                            @RequestParam(name = "file") final MultipartFile file) throws IOException {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final Object pemObject = pemParser.readObject();
@@ -39,8 +43,10 @@ public abstract class AbstractPublicKeyController<K extends PublicKey> {
         }
     }
 
+    @Operation(summary = "Upload public key")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadKey(@RequestParam("file") final MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadKey(@Parameter(description = "Public key in PEM format as Multipart Form Data", required = true)
+                                            @RequestParam("file") final MultipartFile file) throws IOException {
         validatePEMFile(file);
         try (PEMParser pemParser = new PEMParser(new InputStreamReader(file.getInputStream()))) {
             final Object pemObject = pemParser.readObject();
@@ -52,6 +58,7 @@ public abstract class AbstractPublicKeyController<K extends PublicKey> {
         }
     }
 
+    @Operation(summary = "Get the current memory consumption of the corresponding redis key")
     @GetMapping(path = "redis-memory-consumption")
     public ResponseEntity<String> getMemoryConsumption() {
         return ResponseEntity.ok(String.valueOf(publicKeyService.getMemoryConsumption()));

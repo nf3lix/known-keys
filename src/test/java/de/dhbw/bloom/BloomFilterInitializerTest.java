@@ -1,4 +1,4 @@
-package de.dhbw;
+package de.dhbw.bloom;
 
 import io.rebloom.client.Client;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static de.dhbw.BloomFilterInitializer.*;
+import static de.dhbw.bloom.BloomFilterInitializer.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
