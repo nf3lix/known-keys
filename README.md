@@ -31,7 +31,7 @@ false positive. Likewise, there is no reason to delete a known public key.
 
 The Cuckoo filter is another data structure that, depending on the error rate, allows for more performant write and 
 check operations than a Bloom filter. According to [[2]](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf), a Cuckoo filter requires less memory per element than a Bloom 
-filter for error rates greater than <3%. Check operations are more performant with a Cuckoo filter than with a Bloom 
+filter for error rates less than 3%. Check operations are more performant with a Cuckoo filter than with a Bloom 
 filter. Additionally, deleting elements from a Cuckoo filter is possible. However, the throughput of insert operations 
 decreases as the number of elements already in the filter increases. [[2]](https://www.cs.cmu.edu/~dga/papers/cuckoo-conext2014.pdf)
 
